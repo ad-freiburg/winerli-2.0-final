@@ -110,9 +110,11 @@ Read the blog post here to get an idea about what WiNERLi does and how it works:
 
 **To run the evaluation and output the results as a markdown-formatted table, you may change the following variables in `gantry_evaluation.def.yml`:**
 
-- `RESULT_TABLE_FILE`: The file into which the result table should be written. This file will be located in the `output` volume.
+- `RESULT_TABLE_FILE`: The file into which the result tables should be written in markdown formatting. This file will be located in the `output` volume.
 
 
 **Run the evaluation:**
+
+Note that this can take some time because of all the different combinations of input values that are being evaluated and because it does not use multiprocessing.
 
 ```make evaluate```
