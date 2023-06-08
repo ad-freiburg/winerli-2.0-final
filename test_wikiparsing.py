@@ -1,3 +1,5 @@
+""" Johanna Götz """
+
 import pytest
 import sys
 from wiki_parsing import *

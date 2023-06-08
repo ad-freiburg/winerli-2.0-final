@@ -1,23 +1,17 @@
-"""Johanna Götz, 2022"""
+""" Johanna Götz """
 
-import bz2
-import json
 import logging
 import os
 import sys
 import time
 import datetime
 import traceback
-from multiprocessing import Process, Queue, current_process, cpu_count
-
 import xml.sax
-import re
 import csv
-
 import spacy
 import spacy.symbols
+from multiprocessing import Process, Queue, cpu_count
 from spacy.tokens import Token, Doc
-
 from wiki_parsing import *
 from cleanup_page import PageCleaner
 from database import Database
@@ -40,7 +34,6 @@ class WikipediaXMLHandler(xml.sax.handler.ContentHandler):
     def __init__(self, process_num, output_queue):
         self.process_num = process_num
         self.output_queue = output_queue
-        self.logging = False
         self.stack = []
 
     # Reset the variables for the next page
@@ -76,7 +69,6 @@ class WikipediaXMLHandler(xml.sax.handler.ContentHandler):
         if tag == 'title':
             self.page_title = content
             logging.warning('Page "%s"', self.page_title)
-            #self.cleaned_pages.write('Page "%s"' % self.page_title + '\n')
         elif tag == 'ns':
             # If this is a page or an article, the value is 0
             self.is_article_page = (content == '0')
@@ -101,14 +93,9 @@ class WikipediaXMLHandler(xml.sax.handler.ContentHandler):
             self.reset()
             logging.warning('Parsing finished in %s s', (time.time() - overall_start))
             self.log(('Parsing finished in %s s.' % (time.time() - overall_start)))
-    
+
     def apply(self, data):
         self.output_queue.put((self.process_num, data))
-    
-    def log(self, data):
-        if self.logging:
-            #self.log_queue.put((self.process_num, ('Page "%s"' % self.page_title) + '\n'.join(data)))
-            pass
 
 
 def parse_worker(input, output, i):
@@ -117,8 +104,6 @@ def parse_worker(input, output, i):
         my_WikiXMLHandler = WikipediaXMLHandler(i, output)
         parser = xml.sax.make_parser(['xml.sax.IncrementalParser'])
         parser.setContentHandler(my_WikiXMLHandler)
-        #logging.warning(args)
-        #time.sleep(0.5 * random.random())
         offset_range = args[0]
         content = args[1]
         try:
@@ -127,10 +112,10 @@ def parse_worker(input, output, i):
                                                                     content[:200].replace('\n', ' ') + ' [...] ' + content[-200:].replace('\n', ' ')]))
             parser.feed(content)
         except Exception as e:
-            logging.critical('PROBLEM HERE:\n' + '\n'.join([repr(e),
-                                                           'Process: ', repr(i),
-                                                           'Offsets: ', repr(offset_range),
-                                                           content[:200].replace('\n', ' ') + ' [...] ' + content[-200:].replace('\n', ' ')]))
+            logging.critical('PROBLEM HERE:\n' + '\n'.join(
+                [repr(e), 'Process: ', repr(i), 'Offsets: ', repr(offset_range),
+                 content[:200].replace('\n', ' ') + ' [...] ' + content[-200:].replace('\n', ' ')]
+            ))
 
 
 def clean_recognise(page_title, page_text, entity_recogniser, process_num):
@@ -287,7 +272,6 @@ def start(wiki_dump, index_file, wordsfile_name, docsfile_name, logfile_name,
 
     for i in range(num_parse_processes):
         parse_processes.append(Process(target=parse_worker, args=(task_queue, parsed_queue, i)))
-        
 
     for i in range(NUMBER_OF_PROCESSES):
         recognise_processes.append(Process(target=clean_recognise_worker,
@@ -298,20 +282,20 @@ def start(wiki_dump, index_file, wordsfile_name, docsfile_name, logfile_name,
                                                  links_db, scoring_factors,
                                                  threshold, use_adjectives,
                                                  use_numbers, use_nonbinary)))
-    
+
     for i in range(num_write_processes):
         write_procs.append(Process(target=handle_result, args=(i, recognised_queue, wordsfile_name, docsfile_name, write_scores)))
 
     input_proc.start()
     for p in parse_processes:
         p.start()
-        
+
     for p in recognise_processes:
         p.start()
-    
+
     for p in write_procs:
         p.start()
-    
+
     input_proc.join()
 
     # Tell child processes to stop
@@ -320,16 +304,16 @@ def start(wiki_dump, index_file, wordsfile_name, docsfile_name, logfile_name,
 
     for p in parse_processes:
         p.join()
-    
+
     for i in range(NUMBER_OF_PROCESSES):
         parsed_queue.put('STOP')
-    
+
     for p in recognise_processes:
         p.join()
-    
+
     for i in range(num_write_processes):
         recognised_queue.put('STOP')
-    
+
     for p in write_procs:
         p.join()
 
@@ -338,7 +322,7 @@ def start(wiki_dump, index_file, wordsfile_name, docsfile_name, logfile_name,
 def main():
     # The name of the wiki dump file
     input_file = os.getenv('INPUT_FILE', '')
-    
+
     # The index file for the wiki dump
     index_file = os.getenv('INDEX_FILE', '')
 
@@ -346,51 +330,51 @@ def main():
     max_num_processes = os.getenv('NUMBER_PROCESSES', None)
     if max_num_processes is not None:
         max_num_processes = int(max_num_processes)
-    
+
     # How many write-only processes should be used at maximum?
     num_write_processes = os.getenv('NUMBER_WRITE_PROCESSES', None)
     if num_write_processes is not None:
         num_write_processes = int(num_write_processes)
-    
+
     # How many parse-only processes should be used at maximum?
     num_parse_processes = os.getenv('NUMBER_PARSE_PROCESSES', None)
     if num_parse_processes is not None:
         num_parse_processes = int(num_parse_processes)
-    
+
     # Check the environment variable for the wordsfile name
     wordsfile_name = os.getenv('WORDS_FILE', '')
     if len(wordsfile_name) < 1:
         wordsfile_name = 'wordsfile_%s.tsv'
-    
+
     # Check the environment variable for the docsfile name
     docsfile_name = os.getenv('DOCS_FILE', '')
     if len(docsfile_name) < 1:
         docsfile_name = 'docsfile_%s.tsv'
-    
+
     # Check the environment variable for the log file name
     logfile_name = os.getenv('LOG_FILE', '')
     if len(logfile_name) < 1:
         logfile_name = 'log_%s.txt'
-    
+
     # Check the environment variable for the scoring factors
     try:
         scoring_factors = eval(os.getenv('SCORING_FACTORS', ''))
     except:
         scoring_factors = (0, 0, 0, 0)
-    
+
     # Check the environment variable for the threshold value
     try:
         threshold = float(os.getenv('THRESHOLD', ''))
     except:
         threshold = 0.5
-    
+
     # Check the environment variable for whether adjectives should be used in the recognition or not
     use_adjectives = os.getenv('USE_ADJECTIVES', '')
     if use_adjectives.lower() == 'false':
         use_adjectives = False
     else:
         use_adjectives = True
-    
+
     # Check the environment variable for whether numbers should be used in the recognition or not
     use_numbers = os.getenv('USE_NUMBERS', '')
     if use_numbers.lower() == 'true':
@@ -417,13 +401,13 @@ def main():
 
     # Check the environment variable for the gender data file name
     gender_data_file_name = os.path.join(PATH_PREFIX + '/databases', os.getenv('GENDER_DATA_FILE', 'gender_data.tsv'))
-    
+
     # Check the environment variable for the infobox category file name
     infobox_category_file_name = os.path.join(PATH_PREFIX + '/databases', os.getenv('INFOBOX_CATEGORY_FILE', 'infobox_category.tsv'))
 
     # Check the environment variable for the database containing the categories each article belongs to
     page_category_db = Database(os.path.join(PATH_PREFIX + '/databases', os.getenv('PAGE_CATEGORY_DB', 'page_category_db.db')), read_only=True)
-    
+
     # Check the environment variable for the database containing data which article links to which other article
     links_db = Database(os.path.join(PATH_PREFIX + '/databases', os.getenv('LINKS_DB', 'links_db.db')), read_only=True)
 

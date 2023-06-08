@@ -1,7 +1,7 @@
+""" Johanna Götz """
+
 import pytest
 import sys
-from pprint import pprint
-
 from cleanup_page import PageCleaner
 
 
@@ -48,10 +48,11 @@ def test_strip_templates_image():
     Hansen is widely regarded as the "godfather of power metal".]]
     """)
     assert pc.strip_templates() == """
-    
+
 [[Kai Hansen]] of [[Gamma Ray (band)|Gamma Ray]],
     ex-[[Helloween]] during a show in Barcelona, Spain.
-    Hansen is widely regarded as the "godfather of power metal". 
+    Hansen is widely regarded as the "godfather of power metal".
+
 
     """
 
@@ -80,18 +81,18 @@ def test_strip_templates_html():
     <del>deleted</del>
     </div>
     """)
-    print('~', repr(pc.strip_templates()), '~')
     assert pc.strip_templates() == """
     Headline
     Test test Bla bla
     Small text bold text
     super sub
-    
+
     centered
     abbreviation
     deleted
-    
+
     """
+
 
 def test_strip_templates_html_2():
     # The image will be ignored but the links in the description will be extracted
@@ -104,7 +105,6 @@ Much of his early work was financed by his family and commerce, but after 1939 h
 
 There is a replica of the Z3, as well as the original Z4, in the [[Deutsches Museum]] in [[Munich]]. The [[Deutsches Technikmuseum Berlin|Deutsches Technikmuseum]] in [[Berlin]] has an exhibition devoted to Zuse, displaying twelve of his machines, including a replica of the [[Z1 (computer)|Z1]] and several of Zuse's paintings.
     """)
-    #print('~', repr(pc.strip_templates()), '~')
     assert pc.strip_templates() == """
     Konrad Zuse (; 22 June 1910 – 18 December 1995) was a German [[civil engineer]], inventor and [[computer pioneer]]. His greatest achievement was the world's first programmable computer; the functional program-controlled [[Turing completeness|Turing-complete]] [[Z3 (computer)|Z3]] became operational in May 1941. Thanks to this machine and its predecessors, Zuse has often been regarded as the inventor of the modern computer.
 

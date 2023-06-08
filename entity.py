@@ -1,3 +1,7 @@
+""" Johanna Götz """
+""" Code partially adapted from Niklas Baumert's thesis code """
+
+
 # Closely based on Niklas Baumert's bachelor's thesis code
 class Entity:
     __slots__ = ('wikilink', '__relevance', 'specificity', 'categories',
@@ -14,11 +18,11 @@ class Entity:
             self.score = relevance
         self.categories = categories
         self.pronoun = pronoun
-    
+
     @property
     def relevance(self):
         return self.__relevance
-    
+
     @relevance.setter
     def relevance(self, relevance):
         self.__relevance = relevance
@@ -26,18 +30,17 @@ class Entity:
             self.score = relevance
 
     def __str__(self):
-        return '(' + self.wikilink + ', ' + str(self.relevance) + ', ' + \
-                str(self.specificity) + ', ' + str(self.score) + ', ' + \
-                str(self.categories) + ', ' + str(self.pronoun) + ')'
+        return '(%s, %s, %s, %s, %s, %s)' % (
+            self.wikilink, str(self.relevance), str(self.specificity),
+            str(self.score), str(self.categories), str(self.pronoun)
+        )
 
     def __repr__(self):
-        return ('<Entity wikilink:%s, relevance:%s, specificity:%s, ' + \
-                'score: %s, categories:%s, pronoun:%s>') % (self.wikilink,
-                                                           self.relevance,
-                                                           self.specificity,
-                                                           self.score,
-                                                           repr(self.categories),
-                                                           self.pronoun)
+        return ('<Entity wikilink: %s, relevance: %s, specificity: %s, '
+                + 'score: %s, categories: %s, pronoun: %s>') % (
+                    self.wikilink, self.relevance, self.specificity,
+                    self.score, repr(self.categories), self.pronoun
+        )
 
     def __eq__(self, other):
         if type(other) is type(self):

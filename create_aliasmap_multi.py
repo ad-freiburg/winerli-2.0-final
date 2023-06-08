@@ -1,6 +1,5 @@
-"""Johanna Götz"""
+""" Johanna Götz """
 
-import bz2
 import json
 import logging
 import os
@@ -8,11 +7,9 @@ import sys
 import time
 import datetime
 import traceback
-from multiprocessing import Process, Queue, current_process, cpu_count
-
 import xml.sax
-
 import regex as re
+from multiprocessing import Process, Queue, cpu_count
 from wiki_parsing import *
 from parse_info import InfoboxLinkParser
 from database import Database
@@ -207,7 +204,7 @@ class WikipediaXMLHandler(xml.sax.handler.ContentHandler):
             # Reset variables
             self.reset()
             logging.warning('Process %d: Parsing block finished in %s s' % (self.process_num, time.time() - overall_start))
-    
+
     def apply(self, action, data):
         self.output_queue.put((self.process_num, action, data))
 
@@ -344,7 +341,7 @@ class AliasmapOutput:
                 self.page_category_db.start_transaction()
             if self.links_db is not None:
                 self.links_db.start_transaction()
-    
+
     # Insert and update the database with new data
     def insert_update_aliasmap(self, lnrm_text, wikilink_text):
         lnrm = lnrm_repr(lnrm_text)
@@ -357,7 +354,7 @@ class AliasmapOutput:
             SET `num` = `num` + 1
             WHERE `lnrm` = ? AND `wikilink` = ?;
         """, (lnrm, wikilink))
-    
+
     # Add the article page to the database
     def insert_article_page(self, wikilink_text):
         wikilink = wiki_format(wikilink_text)
@@ -365,7 +362,7 @@ class AliasmapOutput:
             INSERT INTO `article_pages` (`wikilink`)
             VALUES(?);
         """, (wikilink,))
-    
+
     # Insert redirect into database
     def insert_redirect(self, wikilink, redirect_target):
         logging.info('Database: Adding "%s" with redirect "%s"' % (wikilink, redirect_target))
@@ -373,7 +370,7 @@ class AliasmapOutput:
             INSERT INTO `redirects` (`wikilink`, `target`)
             VALUES (?,?);
         """, (wikilink, redirect_target))
-    
+
     # Insert a link into the database
     def insert_into_links_db(self, wikilink, links_to):
         if self.links_db is not None:
@@ -381,7 +378,7 @@ class AliasmapOutput:
                 INSERT OR IGNORE INTO `links` (`wikilink`, `links_to`)
                 VALUES (?,?);
             """, (wikilink, links_to))
-    
+
     # Insert categories into database
     def insert_into_pagecategory_db(self, wikilink, categories):
         try:
@@ -393,11 +390,11 @@ class AliasmapOutput:
                 """, (wikilink, categories))
         except:
             logging.critical('Error in dump -- duplicate page: %s' % repr(wikilink))
-    
+
     def insert_into_infoboxcategory_file(self, wikilink, categories):
         if self.infobox_category_file is not None and categories is not None:
             print(wikilink, categories, sep='\t', file=self.infobox_category_file)
-    
+
     def finalise(self):
         # Write the data from the very last page
         self.write_to_dbs(start_new_batch=False)
@@ -416,7 +413,7 @@ class AliasmapOutput:
         if self.page_category_db is not None:
             self.page_category_db.commit_and_close()
 
-    # Calculate the scores for each occurence
+    # Calculate the scores for each occurrence
     @timeit(1)
     def calculate_scores(self):
         # Create an index for the redirects table
@@ -425,7 +422,7 @@ class AliasmapOutput:
             CREATE INDEX IF NOT EXISTS `redirects_wikilink_index`
             ON `redirects` (`wikilink`)
         """)
-        # Set the redirects and update the number of occurences
+        # Set the redirects and update the number of occurrences
         logging.critical('Calculating redirects...')
         if not self.filter_red_links:
             self.final_db.query("""
@@ -501,7 +498,7 @@ class AliasmapOutput:
         """)
         logging.critical('Calculating scores finished in %s s', (time.time() - overall_start))
         self.final_db.commit()
-    
+
     # Drop the temporary table and vacuum
     @timeit(1)
     def drop_temp_and_vacuum(self):
@@ -522,18 +519,19 @@ def worker(input, output, i):
         parser = xml.sax.make_parser(['xml.sax.IncrementalParser'])
         parser.setContentHandler(my_WikiXMLHandler)
         try:
-            logging.info('EVERYTHING OKAY HERE:\n' + '\n'.join(['Process: ', repr(i),
-                                                                'Offsets: ', repr(args[0]),
-                                                                args[1][:200].replace('\n', ' ') + ' [...] ' + args[1][-200:].replace('\n', ' ')]))
+            logging.info('EVERYTHING OKAY HERE:\n' + '\n'.join(
+                ['Process: ', repr(i), 'Offsets: ', repr(args[0]),
+                 args[1][:200].replace('\n', ' ') + ' [...] ' + args[1][-200:].replace('\n', ' ')])
+            )
             parser.feed(args[1])
             block_counter += 1
             page_counter += my_WikiXMLHandler.page_counter
         except Exception as e:
-            logging.critical('PROBLEM HERE:\n' + '\n'.join([repr(e),
-                                                         print(traceback.format_exc()),
-                                                         'Process: ', repr(i),
-                                                         'Offsets: ', repr(args[0]),
-                                                         args[1][:200].replace('\n', ' ') + ' [...] ' + args[1][-200:].replace('\n', ' ')]))
+            logging.critical('PROBLEM HERE:\n' + '\n'.join(
+                [repr(e), repr(traceback.format_exc()), 'Process: ', repr(i),
+                 'Offsets: ', repr(args[0]),
+                 args[1][:200].replace('\n', ' ') + ' [...] ' + args[1][-200:].replace('\n', ' ')])
+            )
     logging.critical('Process %d processed %d blocks containing a total of %d article pages.' % (i, block_counter, page_counter))
 
 
@@ -563,8 +561,9 @@ def handle_result(result, final_db, links_db, page_category_db, infobox_category
     aliasmap_output.finalise()
 
 
-def start(wiki_dump, index_file, final_db, links_db=None, page_category_db=None, infobox_category_file=None,
-          batch_size=100000 , max_num_processes=None, drop_and_vacuum=False, filter_red_links=False):
+def start(wiki_dump, index_file, final_db, links_db=None, page_category_db=None,
+          infobox_category_file=None, batch_size=100000, max_num_processes=None,
+          drop_and_vacuum=False, filter_red_links=False):
     # One process is needed for the extraction of content of the bz2 file
     # One process is needed for the output
     # The rest can do the parsing
@@ -573,7 +572,7 @@ def start(wiki_dump, index_file, final_db, links_db=None, page_category_db=None,
     NUMBER_OF_PROCESSES = max(min(cpu_count(), max_num_processes) - 2, 1)
 
     logging.critical('Start with %s processes!' % str(NUMBER_OF_PROCESSES))
-    
+
     processes = []
 
     # Create queues
@@ -589,10 +588,8 @@ def start(wiki_dump, index_file, final_db, links_db=None, page_category_db=None,
                              args=(wiki_dump, task_queue))
 
     for i in range(NUMBER_OF_PROCESSES):
-        #with open(logfile_name % i, 'w'):
-            #pass
         processes.append(Process(target=worker, args=(task_queue, done_queue, i)))
-    
+
     output_proc = Process(target=handle_result, args=(done_queue, final_db,
                                                       links_db, page_category_db,
                                                       infobox_category_file, batch_size,
@@ -602,7 +599,7 @@ def start(wiki_dump, index_file, final_db, links_db=None, page_category_db=None,
     for p in processes:
         p.start()
     output_proc.start()
-    
+
     input_proc.join()
 
     # Tell child processes to stop
@@ -629,7 +626,7 @@ def main():
         drop_and_vacuum = True
     else:
         drop_and_vacuum = False
-    
+
     # Check the environment variable for whether "red links" (= links with link targets for which ni article page exists yet) should be filtered out or not
     filter_red_links = os.getenv('FILTER_RED_LINKS', '')
     if filter_red_links.lower() == 'true':
@@ -638,22 +635,31 @@ def main():
         filter_red_links = False
 
     # Check the environment variable for the filename of the aliasmap database
-    final_db = Database(os.path.join(PATH_PREFIX + '/output', os.getenv('ALIASMAP_DB', 'aliasmap.db')), create_anew=True)
+    final_db = Database(
+        os.path.join(PATH_PREFIX + '/output', os.getenv('ALIASMAP_DB', 'aliasmap.db')),
+        create_anew=True
+    )
 
     # Check the environment variable for the filename of the links database
     links_db_name = os.getenv('LINKS_DB', '')
     if len(links_db_name) > 1:
-        links_db = Database(os.path.join(PATH_PREFIX + '/output', links_db_name), create_anew=True)
+        links_db = Database(
+            os.path.join(PATH_PREFIX + '/output', links_db_name),
+            create_anew=True
+        )
     else:
         links_db = None
 
     # Check the environment variable for the filename of the page categories database
     page_category_db_name = os.getenv('PAGE_CATEGORY_DB', '')
     if len(page_category_db_name) > 1:
-        page_category_db = Database(os.path.join(PATH_PREFIX + '/output', page_category_db_name), create_anew=True)
+        page_category_db = Database(
+            os.path.join(PATH_PREFIX + '/output', page_category_db_name),
+            create_anew=True
+        )
     else:
         page_category_db = None
-    
+
     # Check the environment variable for the filename of the infobox categories file
     infobox_category_file_name = os.getenv('INFOBOX_CATEGORY_FILE', '')
     if len(infobox_category_file_name) > 1:

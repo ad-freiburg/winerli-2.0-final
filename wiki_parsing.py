@@ -1,18 +1,13 @@
-"""Johanna Götz, 2020"""
+""" Johanna Götz """
 
 import bz2
-import json
 import logging
-import os
 import sys
 import time
-import datetime
 import re
 import traceback
-from multiprocessing import Process, Queue, current_process, cpu_count
+from multiprocessing import Queue
 from unicodedata import normalize
-
-import xml.sax
 
 
 def timeit(repeats):
@@ -22,7 +17,8 @@ def timeit(repeats):
             for _ in range(repeats):
                 result = func(*args, **kwargs)
             end = time.time()
-            logging.critical('%r: %2.2f ms' % (func.__name__, (end - start) * 1000))
+            logging.critical('%r: %2.2f ms' % (func.__name__,
+                             (end - start) * 1000))
             return result
         return wrapper
     return timed_func
@@ -42,7 +38,8 @@ def parse_index(index_file):
     # Get the pairs of first offset and last offset for each process, also add the number of articles
     for offset in offsets:
         if offset > offset_range_start:
-            offset_ranges.append((offset_range_start, offset, offset - offset_range_start))
+            offset_ranges.append((offset_range_start, offset,
+                                  offset - offset_range_start))
             offset_range_start = offset
     offset_ranges.append((offset_range_start, None, -1))
     return offset_ranges
@@ -64,7 +61,7 @@ def parse_xml_multi(wiki_dump, offset_range, task_queue):
                 except:
                     pass
             # Add a new root tag for the block
-            task_queue.put((offset_range, '<mediawiki>\n' + decompressed_content + '\n</mediawiki>\n'))
+            task_queue.put((offset_range, '<mediawiki>\n%s\n</mediawiki>\n' % (decompressed_content,)))
     except Exception as e:
         print(e)
         print(traceback.format_exc())
@@ -95,11 +92,11 @@ def generate_chunks_noindex(wiki_dump, task_queue):
             # It's just text
             else:
                 logging.critical('<mediawiki>\n<page>\n<ns>0</ns>\n<title></title>\n<text>\n'
-                                      + page_content
-                                      + '\n</text>\n</page>\n</mediawiki>\n')
+                                 + page_content
+                                 + '\n</text>\n</page>\n</mediawiki>\n')
                 task_queue.put((None, '<mediawiki>\n<page>\n<ns>0</ns>\n<title></title>\n<text>\n'
-                                      + page_content
-                                      + '\n</text>\n</page>\n</mediawiki>\n'))
+                                + page_content
+                                + '\n</text>\n</page>\n</mediawiki>\n'))
         except Exception as e:
             print(e)
             print(traceback.format_exc())
@@ -128,14 +125,14 @@ def generate_chunks_noindex(wiki_dump, task_queue):
                             # There is an ongoing page
                             if page_content is not None:
                                 page_content += chunk[:found_start].decode()
-                                task_queue.put((None, '<mediawiki>\n' + page_content + '\n</mediawiki>\n'))
+                                task_queue.put((None, '<mediawiki>\n%s\n</mediawiki>\n' % (page_content,)))
                             page_content = chunk[found_start:].decode()
                         # We're at the end of the whole wiki dump
                         else:
                             # There is an ongoing page
                             if page_content is not None:
                                 page_content += chunk[:found_end].decode()
-                                task_queue.put((None, '<mediawiki>\n' + page_content + '\n</mediawiki>\n'))
+                                task_queue.put((None, '<mediawiki>\n%s\n</mediawiki>\n' % (page_content,)))
         except Exception as e:
             print(e)
             print(traceback.format_exc())
@@ -154,7 +151,6 @@ def lnrm_repr(string, normalisation='NFKC', baumert=False):
         # https://docs.python.org/3/library/unicodedata.html#unicodedata.normalize
         # And use the LNRM definition from here (2.3):
         # https://www.researchgate.net/publication/265107266_Stanford-UBC_entity_linking_at_TAC-KBP
-        #clean_string = unidecode(string).lower()
         clean_string = normalize(normalisation, string).lower()
         chars = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~\t\n '
     for c in chars:

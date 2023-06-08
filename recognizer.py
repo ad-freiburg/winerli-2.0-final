@@ -1,3 +1,6 @@
+""" Johanna Götz """
+""" Code partially adapted from Niklas Baumert's thesis code """
+
 import csv
 import os
 import re
@@ -7,9 +10,6 @@ import spacy
 import spacy.symbols
 from spacy.tokens import Token, Doc
 from copy import deepcopy
-from pprint import pprint
-
-from database import Database
 from wikilink import Wikilink
 from entity import Entity
 from wiki_parsing import *
@@ -166,7 +166,7 @@ class EntityRecogniser:
         self.use_numbers = use_numbers
         self.contains_links = True
         self.use_nonbinary = use_nonbinary
-    
+
     def start(self, text, page_title):
         self.page_title = page_title
         # Add the current page to the trivially linked entities
@@ -207,25 +207,26 @@ class EntityRecogniser:
         self.pronoun_data.clear()
         self.pronoun_data = deepcopy(self.pronoun_data_template)
         self.partial_entity_data.clear()
-    
+
     def _recognize(self, tokens):
         logging.warning('Recognition: Start recognition...')
         n = len(tokens)
         entities = [None for _ in range(n)]
         prev_link = None
         i = 0
+        start_i = 0
         while i < n:
             # Process trivial entities which are entities that are directly linked
             token = tokens[i]
             str_pos = token.idx
-            #token_len = len(token)
             link = self.all_links.get(str_pos, None)
             logging.warning('Recognition current token: "' + repr(token) + '"; Link? ' + repr(link))
-            #print('Token:', '"' + token.text + '"', token.pos_, token.dep_, str_pos, 'Control: "' + my_string[str_pos:str_pos + len(token)] + '"', token_len, 'Link: ' + repr(link), sep=' # ')
             # If there is an ongoing link
             if prev_link is not None:
                 prev_link_len = str_pos - prev_link.start_pos()
-                logging.warning('Explicitly given link stuff: Pos: %s ----- Start pos: %s ----- Calculated len: %s ----- Real len: %s' % (str_pos, prev_link.start_pos(), prev_link_len, len(prev_link)))
+                logging.warning('Explicitly given link stuff: Pos: %s ----- Start pos: %s ----- Calculated len: %s ----- Real len: %s' % (
+                    str_pos, prev_link.start_pos(), prev_link_len, len(prev_link))
+                )
                 # Add the token if it belongs to the link text
                 if prev_link_len < len(prev_link):
                     prev_link.add_token(token)
@@ -306,13 +307,13 @@ class EntityRecogniser:
                 if sub_sequence[0].pos in (spacy.symbols.PUNCT,):
                     logging.warning('Recognition: It\'s just punctuation.')
                     break
-                
+
                 # If the last token of the current sub-sequence is an adposition or a puncuation symbol,
                 # the sequence should continue in order to not lose information
                 if sub_sequence[-1].pos in (spacy.symbols.ADP, spacy.symbols.PUNCT):
                     logging.warning('Recognition: Ends in punctuation or an adposition.')
                     continue
-                
+
                 # If the sub-sequence has a "the", assume that it's (infobox) category information
                 if i - 1 >= 0 and tokens[i - 1].pos == spacy.symbols.DET and tokens[i - 1].lower_ not in ('a', 'an'):
                     category = sub_sequence.text.lower()
@@ -325,8 +326,9 @@ class EntityRecogniser:
                             for position in range(i - 1, j + 1):
                                 entities[position] = entity
                             continue
-                
-                # The latest token in the sub-sequence should be a (proper) noun or a pronoun   
+
+                # The latest token in the sub-sequence should be a (proper) noun or a pronoun
+
                 # NOTE Change by Johanna: Keep leading adjectives
                 if self.use_adjectives and not self.use_numbers:
                     if sub_sequence[-1].pos not in (spacy.symbols.NOUN, spacy.symbols.PROPN, spacy.symbols.PRON, spacy.symbols.ADJ):
@@ -420,8 +422,9 @@ class EntityRecogniser:
                 # Note: This approach is only relevant if the text contains links
                 if self.contains_links and self.scoring_factors[0] > 1:
                     previously_linked_entities = self.trivially_linked_entities_by_lnrm.get(lnrm, None)
-                    logging.warning('Recognition: Approach 2: The text "%s" with LNRM "%s" was previously explicitly linked to the following entities: %s' % (sub_sequence.text, lnrm, repr(None if previously_linked_entities is None else list(previously_linked_entities.values()))))
-                    #logging.warning('Recognition: Approach 2: Previously linked entities: %s' % repr(previously_linked_entities))
+                    logging.warning('Recognition: Approach 2: The text "%s" with LNRM "%s" was previously explicitly linked to the following entities: %s' % (
+                        sub_sequence.text, lnrm, repr(None if previously_linked_entities is None else list(previously_linked_entities.values())))
+                    )
                     # If it had appeared but doesn't have a relevance set already, get it from the query result and set it
                     if previously_linked_entities is not None:
                         for _, previously_linked_entity in previously_linked_entities.items():
@@ -429,17 +432,28 @@ class EntityRecogniser:
                             try:
                                 results_as_dict[previously_linked_entity.wikilink]['score'] *= self.scoring_factors[0]
                             except Exception as e:
-                                logging.critical('There is no result for wikilink %s. Please check if your aliasmap is out of date.' % (repr(previously_linked_entity.wikilink),))
+                                logging.critical('There is no result for wikilink %s. Please check if your aliasmap is out of date.' % (
+                                    repr(previously_linked_entity.wikilink),)
+                                )
                                 logging.critical(repr(results_as_dict))
                                 logging.critical(e)
-                            logging.warning('Recognition: Approach 2: The entity with wikilink "%s" and relevance %s has previously appeared as a link. The new score is %s.' % (previously_linked_entity.wikilink, repr(results_as_dict[previously_linked_entity.wikilink]['relevance']), repr(results_as_dict[previously_linked_entity.wikilink]['score'])))
+                            logging.warning('Recognition: Approach 2: The entity with wikilink "%s" and relevance %s has previously appeared as a link. The new score is %s.' % (
+                                previously_linked_entity.wikilink,
+                                repr(results_as_dict[previously_linked_entity.wikilink]['relevance']),
+                                repr(results_as_dict[previously_linked_entity.wikilink]['score']))
+                            )
 
                 # Approach 3:
                 # Check which of the possible entities have appeared as link targets already in explicitly given links
                 # Note: This approach is only relevant if the text contains links
                 if self.contains_links and self.scoring_factors[1] > 1:
                     # Is the following line even necessary?
-                    previously_seen_wikilinks = list(filter(lambda x: self.trivially_linked_entities_by_wikilink.get(x[0], None) is not None, results))
+                    previously_seen_wikilinks = list(
+                        filter(
+                            lambda x: self.trivially_linked_entities_by_wikilink.get(x[0], None) is not None,
+                            results
+                        )
+                    )
                     logging.warning('Recognition: Approach 3: The following entities have previously appeared in link targets: ' + repr(previously_seen_wikilinks))
                     # Multiply with the scoring factor
                     for possible_entity in results:
@@ -447,11 +461,11 @@ class EntityRecogniser:
                         if possible_entity_wikilink in self.trivially_linked_entities_by_wikilink:
                             results_as_dict[possible_entity_wikilink]['score'] *= self.scoring_factors[1]
                             logging.warning('Recognition: Approach 3: The entity with wikilink "%s" and relevance %s has previously appeared as a link target. The new score is %s.' % (possible_entity_wikilink, repr(results_as_dict[possible_entity_wikilink]['relevance']), repr(results_as_dict[possible_entity_wikilink]['score'])))
-                
+
                 # Approach 4:
                 # Check the overlap in page categories between the current page and the possible entities
                 if self.scoring_factors[2] > 0 and len(self.page_title) > 0:
-                     # Get the categories for the current page if it hasn't been set yet
+                    # Get the categories for the current page if it hasn't been set yet
                     if self.current_page_categories is None:
                         self.current_page_categories = set(json.loads(
                             self.page_category_db.query(
@@ -464,7 +478,8 @@ class EntityRecogniser:
                             )[0][0]
                         ))
                         logging.warning('Recognition: Approach 4: The current page belongs to the following categories: %s' % repr(self.current_page_categories))
-                    # Get all possible entities who categories haven't already been retrieved 
+                    # Get all possible entities who categories haven't already been retrieved
+
                     entities_without_categories = [possible_entity[0] for possible_entity in results if possible_entity[0] not in self.page_categories]
                     # Get the categories
                     if len(entities_without_categories) > 0:
@@ -500,7 +515,7 @@ class EntityRecogniser:
                                 # The scoring value allows scaling of the influence of the overlap
                                 # Since this can result in a value lower than 1, which would give a score smaller than the relevance, it has to be 1 at minimum
                                 results_as_dict[possible_entity_wikilink]['score'] *= max(((self.scoring_factors[2] - 1) * self.page_categories_overlap[possible_entity_wikilink]) + 1, 1)
-                                logging.warning('Recognition: Approach 4: Entity candidate "%s" with relevance %s now has score %s due to %s percent overlap' % (repr(possible_entity_wikilink), repr(results_as_dict[possible_entity_wikilink]['relevance']), repr(results_as_dict[possible_entity_wikilink]['score']), repr(self.page_categories_overlap[possible_entity_wikilink])))   
+                                logging.warning('Recognition: Approach 4: Entity candidate "%s" with relevance %s now has score %s due to %s percent overlap' % (repr(possible_entity_wikilink), repr(results_as_dict[possible_entity_wikilink]['relevance']), repr(results_as_dict[possible_entity_wikilink]['score']), repr(self.page_categories_overlap[possible_entity_wikilink])))
 
                 # Approach 5:
                 # For every possible entity that we found for the current LNRM,
@@ -539,7 +554,6 @@ class EntityRecogniser:
                     if results_as_dict[wikilink]['score'] > max_score:
                         max_score = results_as_dict[wikilink]['score']
                         max_score_wikilink = wikilink
-                #logging.warning('Recognition: All of the possible entities:  ' + repr(results_as_dict))
                 # Reject the entity with the highest score if the score doesn't exceed the threshold
                 logging.warning('Recognition: Max score:  %s; max score wikilink: %s; threshold: %s' % (repr(max_score), repr(max_score_wikilink), repr(self.threshold)))
                 if max_score < self.threshold:
@@ -548,8 +562,8 @@ class EntityRecogniser:
                 categories = self.category_database.get(max_score_wikilink)
                 pronoun = self._pronoun_lookup(max_score_wikilink)
                 data = Entity(max_score_wikilink, results_as_dict[max_score_wikilink]['relevance'], specificity, categories, pronoun, results_as_dict[max_score_wikilink]['score'])
-                logging.warning('Recognition: Here\'s our current entity for the text "%s":  %s' %(repr(sub_sequence), repr(data)))
-                logging.warning('Recognition: Another entity for this text could be: "%s"' %(repr(entities[i]), ))
+                logging.warning('Recognition: Here\'s our current entity for the text "%s":  %s' % (repr(sub_sequence), repr(data)))
+                logging.warning('Recognition: Another entity for this text could be: "%s"' % (repr(entities[i]), ))
 
                 # Add the category data
                 if categories is not None:
@@ -560,7 +574,7 @@ class EntityRecogniser:
                         if len(words) > 1:
                             for word in words:
                                 self.category_data[word] = data
-                
+
                 # Add the pronoun data
                 if pronoun is not None:
                     self.pronoun_data[pronoun] = data

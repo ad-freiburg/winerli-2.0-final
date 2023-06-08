@@ -1,3 +1,5 @@
+""" Johanna Götz """
+
 import os
 import sqlite3
 
@@ -37,6 +39,6 @@ class Database:
     def commit_and_close(self):
         self._database.commit()
         self._database.close()
-    
+
     def close(self):
         self._database.close()

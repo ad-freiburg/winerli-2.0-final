@@ -1,18 +1,16 @@
-#######################################################
-# Code mostly taken from Niklas Baumert's thesis code #
-# Adapted by Johanna Götz, 2022                       #
-#######################################################
+""" Johanna Götz """
+""" Code mostly taken from Niklas Baumert's thesis code """
 
 import csv
 import datetime
 import os
 import re
-
 from wiki_parsing import wiki_format
 
 
 def identity(link):
     return link
+
 
 def merge(files_in, file_out, merge_function, remove_merged_files=False):
     offset = 0
@@ -89,7 +87,7 @@ def start(file_overwrite, file_type, results_path, words_file_converter,
 
 def single_map(mapping):
     def convert(link):
-        assert(isinstance(link, str))
+        assert isinstance(link, str)
         link = link.replace('<', '').replace('>', '')
         try:
             result = mapping[link]
@@ -159,7 +157,7 @@ def main():
 
     # The input file
     input_file = os.getenv('INPUT_FILE', '')
-    
+
     # The wordsfile and docsfile name prefixes
     wordsfile_name = os.getenv('WORDSFILE_NAME', 'wordsfile_[0-9]+.txt')
     docsfile_name = os.getenv('DOCSFILE_NAME', 'docsfile_[0-9]+.txt')
@@ -169,7 +167,7 @@ def main():
 
     # The type of the input file (one of docsfile', 'wordsfile')
     results_path = os.getenv('RESULTS_PATH', '')
-    
+
     # The type of the input file (one of docsfile', 'wordsfile')
     remove_merged_files = os.getenv('REMOVE_MERGED_FILES', 'False')
     if remove_merged_files.lower() == 'true':
@@ -179,48 +177,60 @@ def main():
 
     # Freebase to Wikipedia mapping
     freebase_map = os.path.join('/mappings', os.getenv('FREEBASE_MAP', ''))
-    
+
     # Wikidata to Wikipedia mapping
     wikidata_map = os.path.join('/mappings', os.getenv('WIKIDATA_MAP', ''))
-
 
     in_format = input_type.lower()
     out_format = output_type.lower()
     if in_format == out_format:
         print('0', in_format, '=', out_format)
-        words_file_converter = lambda *args: words_file(*args, identity)
+
+        def words_file_converter(*args):
+            return words_file(*args, identity)
     elif in_format == 'wikipedia':
         if out_format == 'wikidata':
             wikipedia_wikidata_mapping = load_wikidata_wikipedia_mapping(wikidata_map, True)
-            words_file_converter = lambda *args: words_file(*args, single_map(wikipedia_wikidata_mapping))
+
+            def words_file_converter(*args):
+                return words_file(*args, single_map(wikipedia_wikidata_mapping))
             suffix = "-wikidata"
             print('1', in_format, '->', out_format)
         else:  # Freebase
             wikipedia_freebase_mapping = load_freebase_wikipedia_mapping(freebase_map, True)
-            words_file_converter = lambda *args: words_file(*args, single_map(wikipedia_freebase_mapping))
+
+            def words_file_converter(*args):
+                return words_file(*args, single_map(wikipedia_freebase_mapping))
             suffix = "-freebase"
             print('2', in_format, '->', out_format)
     elif in_format == 'wikidata':
         if out_format == 'wikipedia':
             wikidata_wikipedia_mapping = load_wikidata_wikipedia_mapping(wikidata_map)
-            words_file_converter = lambda *args: words_file(*args, single_map(wikidata_wikipedia_mapping))
+
+            def words_file_converter(*args):
+                return words_file(*args, single_map(wikidata_wikipedia_mapping))
             suffix = "-wikipedia"
             print('3', in_format, '->', out_format)
         else:  # Freebase
             wikidata_wikipedia_mapping = load_wikidata_wikipedia_mapping(wikidata_map)
             wikipedia_freebase_mapping = load_freebase_wikipedia_mapping(freebase_map, True)
-            words_file_converter = lambda *args: words_file(*args, double_map(wikidata_wikipedia_mapping, wikipedia_freebase_mapping))
+
+            def words_file_converter(*args):
+                return words_file(*args, double_map(wikidata_wikipedia_mapping, wikipedia_freebase_mapping))
             suffix = "-freebase"
             print('4', in_format, '->', out_format)
     else:  # Freebase
         freebase_wikipedia_mapping = load_freebase_wikipedia_mapping(freebase_map)
         if out_format == 'wikipedia':
-            words_file_converter = lambda *args: words_file(*args, single_map(freebase_wikipedia_mapping))
+            def words_file_converter(*args):
+                return words_file(*args, single_map(freebase_wikipedia_mapping))
             suffix = "-wikipedia"
             print('5', in_format, '->', out_format)
         else:  # Wikidata
             wikipedia_wikidata_mapping = load_wikidata_wikipedia_mapping(wikidata_map, True)
-            words_file_converter = lambda *args: words_file(*args, converter_func=double_map(freebase_wikipedia_mapping, wikipedia_wikidata_mapping))
+
+            def words_file_converter(*args):
+                return words_file(*args, converter_func=double_map(freebase_wikipedia_mapping, wikipedia_wikidata_mapping))
             suffix = "-wikidata"
             print('6', in_format, '->', out_format)
 
@@ -229,8 +239,4 @@ def main():
 
 
 if __name__ == '__main__':
-    if os.getenv('RUN_TESTS', None) is not None:
-        import pytest
-        sys.exit(pytest.main())
-    else:
-        main()
+    main()

@@ -1,22 +1,25 @@
+""" Johanna Götz """
+
 import pytest
 from create_aliasmap_multi import *
 
 
 BAUMERT = False
 
+
 @pytest.fixture
 def aliasmap_db():
-   return Database('/input/aliasmap_test.db', read_only=True)
-   
+    return Database('/input/aliasmap_test.db', read_only=True)
+
 
 @pytest.fixture
 def links_db():
-   return Database('/input/links_db_test.db', read_only=True)
-   
-   
+    return Database('/input/links_db_test.db', read_only=True)
+
+
 @pytest.fixture
 def page_category_db():
-   return Database('/input/page_category_db_test.db', read_only=True)
+    return Database('/input/page_category_db_test.db', read_only=True)
 
 
 @pytest.fixture
@@ -31,12 +34,12 @@ def test_aliasmap(aliasmap_db):
         """SELECT COUNT(*) FROM `aliasmap`;"""
     )
     assert count[0][0] == 4478
-    
+
     result_1 = aliasmap_db.query(
         """SELECT * FROM `aliasmap` WHERE `lnrm` = 'lnrm__abcdefgh';"""
     )
     assert len(result_1) == 0
-    
+
     result_2 = aliasmap_db.query(
         """SELECT * FROM `aliasmap` WHERE `lnrm` = 'lnrm__fearofthedark' ORDER BY `wikilink`;"""
     )
@@ -44,7 +47,7 @@ def test_aliasmap(aliasmap_db):
     assert result_2[0] == ('lnrm__fearofthedark', 'Fear_of_the_Dark_(Iron_Maiden_album)', 6, pytest.approx(0.66666, 0.0001))
     assert result_2[1] == ('lnrm__fearofthedark', 'Fear_of_the_Dark_(song)', 2, pytest.approx(0.22222, 0.0001))
     assert result_2[2] == ('lnrm__fearofthedark', 'Fear_of_the_dark', 1, pytest.approx(0.11111, 0.0001))
-    
+
     result_3 = aliasmap_db.query(
         """SELECT * FROM `aliasmap` WHERE `wikilink` = 'Fear_of_the_Dark_(song)' ORDER BY `lnrm`;"""
     )
@@ -55,25 +58,25 @@ def test_aliasmap(aliasmap_db):
     # This comes from a link and from a page title
     assert result_3[2] == ('lnrm__fearofthedarksong', 'Fear_of_the_Dark_(song)', 2, 1.0)
     assert result_3[3] == ('lnrm__titletrack', 'Fear_of_the_Dark_(song)', 1, 0.5)
-    
+
     result_4 = aliasmap_db.query(
         """SELECT * FROM `aliasmap` WHERE `wikilink` = 'Fear_of_the_dark' ORDER BY `lnrm`;"""
     )
     assert len(result_4) == 1
     assert result_4[0] == ('lnrm__fearofthedark', 'Fear_of_the_dark', 1, pytest.approx(0.11111, 0.0001))
-    
+
     result_5 = aliasmap_db.query(
         """SELECT * FROM `aliasmap` WHERE `lnrm` = 'lnrm__acappella' ORDER BY `wikilink`;"""
     )
     assert len(result_5) == 1
     assert result_5[0] == ('lnrm__acappella', 'A_cappella', 2, 1.0)
-    
+
     result_6 = aliasmap_db.query(
         """SELECT * FROM `aliasmap` WHERE `wikilink` = 'A_cappella' ORDER BY `lnrm`;"""
     )
     assert len(result_6) == 1
     assert result_6[0] == ('lnrm__acappella', 'A_cappella', 2, 1.0)
-    
+
     result_7 = aliasmap_db.query(
         """SELECT * FROM `aliasmap` WHERE `lnrm` = 'lnrm__german'  ORDER BY `wikilink`;"""
     )
@@ -82,13 +85,13 @@ def test_aliasmap(aliasmap_db):
     assert result_7[1] == ('lnrm__german', 'German_language', 5, pytest.approx(0.55555, 0.0001))
     assert result_7[2] == ('lnrm__german', 'Germans', 2, pytest.approx(0.22222, 0.0001))
     assert result_7[3] == ('lnrm__german', 'Media_Control_Charts', 1, pytest.approx(0.11111, 0.0001))
-    
+
     result_8 = aliasmap_db.query(
         """SELECT * FROM `aliasmap` WHERE `wikilink` = 'German_language' ORDER BY `lnrm`;"""
     )
     assert len(result_8) == 1
     assert result_8[0] == ('lnrm__german', 'German_language', 5, pytest.approx(0.55555, 0.0001))
-    
+
     result_9 = aliasmap_db.query(
         """SELECT * FROM `aliasmap` WHERE `wikilink` = 'Germans' ORDER BY `lnrm`;"""
     )
@@ -168,7 +171,7 @@ def test_links(links_db):
         """SELECT COUNT(*) FROM `links`;"""
     )
     assert count[0][0] == 4993
-    
+
     result_1 = links_db.query(
         """SELECT * FROM `links` WHERE `wikilink` = 'Real_Humans' ORDER BY ROWID;"""
     )
@@ -216,7 +219,7 @@ def test_links(links_db):
     assert result_1[40] == ('Real_Humans', 'Canada')
     assert result_1[41] == ('Real_Humans', 'ABC_(Australian_TV_channel)')
     assert result_1[42] == ('Real_Humans', 'Australia')
-    
+
     result_2 = links_db.query(
         """SELECT * FROM `links` WHERE `wikilink` = 'Pizza';"""
     )

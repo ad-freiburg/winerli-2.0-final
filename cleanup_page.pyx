@@ -1,3 +1,5 @@
+""" Johanna Götz """
+
 # cython: language_level=3
 
 import os
@@ -5,12 +7,10 @@ import re
 import sys
 import logging
 from pprint import pprint
-#import numpy as np
+
 
 logging.addLevelName(100, 'PROHIBIT_LOGGING')
-
 LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()
-
 logging.basicConfig(stream=sys.stdout, level=LOGLEVEL)
 
 
@@ -94,7 +94,7 @@ cdef class PageCleaner:
         # Regex to detect special links and also interlanguage links
         self.special_link = re.compile(r'^[:]?([Ff]ile|[Ii]mage|[Ww]ikt|[Ww]ikipedia|WP|[Mm]edia|[Ww]ikisource|[Ss]pecies|[Cc]ommons|[Hh]elp|[Tt]alk|[a-z]{2}):')
         self.split_no_links = re.compile(r'\|(?![^[][^[]*]])')
-    
+
 
     cpdef join(self, str s, list l):
         return s.join(l)
@@ -132,7 +132,7 @@ cdef class PageCleaner:
             result += ' '.join(temp_list) + '\n'
         return result
 
-    
+
     # Strip the templates but keep the content if possible
     cpdef strip_templates(self):
          # Integrate this later maybe
@@ -140,7 +140,7 @@ cdef class PageCleaner:
         pos = -1
         return self.parse_templates()
 
-    
+
     # Strip the templates but keep the content if possible
     cpdef parse_templates(self):
         cdef str self_string = self.string
@@ -637,10 +637,3 @@ cdef class PageCleaner:
             logging.info('Parse templates: state stack: ' + repr(state_stack))
             logging.info('=' * 50)
         return self.join('', template_stack[-1])
-
-
-cpdef main():
-    pass
-
-if __name__ == '__main__':
-    main()

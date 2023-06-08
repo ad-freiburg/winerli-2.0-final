@@ -1,7 +1,9 @@
+""" Johanna Götz """
+""" Code partially taken and adapted from Niklas Baumert's thesis code """
+
 import csv
 import logging
 import os
-from multiprocessing import Process, Queue, current_process, cpu_count
 from wiki_parsing import *
 from database import Database
 from recognizer import *
@@ -142,9 +144,8 @@ def measure_metrics(sent_gold, my_answers, spacy_answers, my_mapping=lambda x: x
         logging.warning('Sentence/document %s:' % (sent_idn,))
         logging.warning('Send gold: %s' % (repr(sent_gold[sent_idn]),))
         logging.warning('My answers: %s' % (repr(my_answers[sent_idn]),))
-        logging.warning('Spacy answers: %s' % (str(list(map(lambda x: x.orth_,
-                                                            spacy_answers[sent_idn]))),
-                                               )
+        logging.warning('Spacy answers: %s' % (
+            str(list(map(lambda x: x.orth_, spacy_answers[sent_idn]))),)
         )
         spacy_entities = [ent.orth_ for ent in spacy_answers[sent_idn].ents]
         logging.warning('Spacy entities: %s' % (repr(spacy_answers[sent_idn].ents),))
@@ -165,16 +166,13 @@ def measure_metrics(sent_gold, my_answers, spacy_answers, my_mapping=lambda x: x
                 logging.warning(repr(my_answers[sent_idn]))
                 logging.warning(repr(token_idn))
                 logging.warning('~~~~~~~~~~~~')
-            logging.warning('Current tokens: gold: %s; mine: %s; spacy: %s' % (repr(gold_token),
-                                                                               repr(my_token),
-                                                                               repr(spacy_token))
+            logging.warning('Current tokens: gold: %s; mine: %s; spacy: %s' % (
+                repr(gold_token), repr(my_token), repr(spacy_token))
             )
             # Entity detection
             if (gold_token.tag and gold_token.tag != 'O') or gold_token.link:
-                #if gold_token.tag or gold_token.link:
-                logging.warning('Check for detected entities: %s ~~~ %s ~~~ %s' % (repr(gold_token),
-                                                                                   repr(my_token),
-                                                                                   repr(spacy_token.orth))
+                logging.warning('Check for detected entities: %s ~~~ %s ~~~ %s' % (
+                    repr(gold_token), repr(my_token), repr(spacy_token.orth))
                 )
                 if my_token:
                     my_detection.tp += 1
@@ -198,9 +196,9 @@ def measure_metrics(sent_gold, my_answers, spacy_answers, my_mapping=lambda x: x
             if gold_token.tag and gold_token.tag != 'O':
                 gold_tag = gold_token.tag.split('-')[-1]
                 # Use both categories and use map with my_mapping to get all mapped categories
-                logging.warning('Categories: %s maps to %s; Spacy category: %s; Expected category: %s' % (repr(category),
-                    repr(list(map(my_mapping, category))), repr(spacy_mapping(spacy_token.ent_type_)),
-                    repr(gold_tag))
+                logging.warning('Categories: %s maps to %s; Spacy category: %s; Expected category: %s' % (
+                    repr(category), repr(list(map(my_mapping, category))),
+                    repr(spacy_mapping(spacy_token.ent_type_)), repr(gold_tag))
                 )
                 if my_token and (gold_tag in map(my_mapping, category)):
                     my_tag.tp += 1
@@ -298,29 +296,30 @@ def generate_markdown_tables(eval_results):
     options = {(False, False): 'w/o a/n.', (False, True): 'w/o adj.',
                (True, False): 'w/o num.', (True, True): ''}
     result_tables = dict()
-    res_detection = dict()
-    res_categorization = dict()
-    res_linking = dict()
     line_template = '| {:19.19s} | {:11.11s} | {:9.9s} | {:36.36s} | {:9.9s} | {:6.6s} | {:6.6s} |\n'
-    tasks = ('detection', 'categorization', 'linking')
     for result in sorted_results:
         system_name = systems[result.system]
         # Add the table lines for each task
         try:
-            scoring_line = '`{:s}` {:s}'.format(str(result.scoring),
-                options[(result.adjectives, result.numbers)])
+            scoring_line = '`{:s}` {:s}'.format(
+                str(result.scoring), options[(result.adjectives, result.numbers)]
+            )
         except:
             scoring_line = 'N/A'
         # Fill in the metrics
         if result.metrics is not None:
-            line = line_template.format(datasets[result.dataset], system_name,
+            line = line_template.format(
+                datasets[result.dataset], system_name,
                 str(result.threshold), str(scoring_line),
                 str(result.metrics.precision), str(result.metrics.recall),
-                str(result.metrics.f1))
+                str(result.metrics.f1)
+            )
         else:
-            line = line_template.format(datasets[result.dataset], system_name,
-                *tuple('N/A' for _ in range(5)))
-        # Create dictionaries 
+            line = line_template.format(
+                datasets[result.dataset], system_name, *tuple('N/A' for _ in range(5))
+            )
+        # Create dictionaries
+
         if result.task not in result_tables:
             result_tables[result.task] = dict()
         if system_name not in result_tables[result.task]:
@@ -432,7 +431,7 @@ def start(logfile_name,
           gender_data_file_name, scoring_factors, threshold, use_adjectives,
           use_numbers, evaluation_sets,
           contains_spaces, category_map):
-    
+
     # Load gender data
     gender_db = dict()
     load_gender_data(gender_db, gender_data_file_name)
@@ -479,7 +478,7 @@ def start(logfile_name,
             print_results(wiki_data, my_answers, spacy_answers, my_mapping,
                           spacy_mapping, scoring_factors, threshold, use_adjectives,
                           use_numbers, 'Wikipedia: %s' % str(eval_set['set']))
-        
+
         elif eval_set['type'] == 'gmb':
             logging.debug('~~~ GMB text: ' + repr(gmb_text))
             # GMB evaluation
@@ -488,7 +487,7 @@ def start(logfile_name,
                                              threshold, use_adjectives, use_numbers,
                                              nlp, gmb_text)
             print('Annotated Corpus for Named Entity Recognition from '
-                'kaggle.com/abhinavwalia95/entity-annotated-corpus/home')
+                  'kaggle.com/abhinavwalia95/entity-annotated-corpus/home')
             logging.warning('Annotated Corpus for Named Entity Recognition from '
                             '')
             # Mappings for GMB and for Spacy
@@ -510,33 +509,33 @@ def main():
     logfile_name = os.getenv('LOG_FILE', '')
     if len(logfile_name) < 1:
         logfile_name = 'log_%s.txt'
-    
+
     # Check the environment variable for the scoring factors
     try:
         scoring_factors = eval(os.getenv('SCORING_FACTORS', ''))
     except:
         scoring_factors = (0, 0, 0, 0)
-    
+
     # Check the environment variable for the threshold value
     try:
         threshold = int(os.getenv('THRESHOLD', ''))
     except:
         threshold = 0.5
-    
+
     # Check the environment variable for whether adjectives should be used in the recognition or not
     use_adjectives = os.getenv('USE_ADJECTIVES', '')
     if use_adjectives.lower() == 'false':
         use_adjectives = False
     else:
         use_adjectives = True
-    
+
     # Check the environment variable for whether numbers should be used in the recognition or not
     use_numbers = os.getenv('USE_NUMBERS', '')
     if use_numbers.lower() == 'true':
         use_numbers = True
     else:
         use_numbers = False
-    
+
     # Check the environment variable for whether the tokens have spaces at the end of not
     # This is needed to be able to create sentences again from the single tokens
     contains_spaces = os.getenv('CONTAINS_SPACES', '')
@@ -552,36 +551,46 @@ def main():
         evaluation_sets = ['wikipedia', 'gmb']
 
     # Check the environment variable for the gender data file name
-    gender_data_file_name = os.path.join(PATH_PREFIX + '/databases',
-        os.getenv('GENDER_DATA_FILE', 'gender_data.tsv'))
-    
+    gender_data_file_name = os.path.join(
+        PATH_PREFIX + '/databases', os.getenv('GENDER_DATA_FILE', 'gender_data.tsv')
+    )
+
     # Check the environment variable for the infobox category file name
-    infobox_category_file_name = os.path.join(PATH_PREFIX + '/databases',
-        os.getenv('INFOBOX_CATEGORY_FILE', 'infobox_category.tsv'))
+    infobox_category_file_name = os.path.join(
+        PATH_PREFIX + '/databases', os.getenv('INFOBOX_CATEGORY_FILE', 'infobox_category.tsv')
+    )
 
     # Check the environment variable for the database containing the categories each article belongs to
-    page_category_db = Database(os.path.join(PATH_PREFIX + '/databases',
-        os.getenv('PAGE_CATEGORY_DB', 'page_category_db.db')), read_only=True)
+    page_category_db = Database(
+        os.path.join(PATH_PREFIX + '/databases', os.getenv('PAGE_CATEGORY_DB', 'page_category_db.db')),
+        read_only=True
+    )
 
     # Check the environment variable for the database containing data which article links to which other article
-    links_db = Database(os.path.join(PATH_PREFIX + '/databases',
-        os.getenv('LINKS_DB', 'links_db.db')), read_only=True)
+    links_db = Database(
+        os.path.join(PATH_PREFIX + '/databases', os.getenv('LINKS_DB', 'links_db.db')),
+        read_only=True)
 
     # Check the environment variable for the aliasmap database
-    aliasmap_db = Database(os.path.join(PATH_PREFIX + '/databases',
-        os.getenv('ALIASMAP_DB', 'aliasmap.db')), read_only=True)
+    aliasmap_db = Database(
+        os.path.join(PATH_PREFIX + '/databases', os.getenv('ALIASMAP_DB', 'aliasmap.db')),
+        read_only=True)
 
     # Check the environment variable for the result table file
-    result_table_file = os.path.join(PATH_PREFIX + '/output',
-        os.getenv('RESULT_TABLE_FILE', None))
+    result_table_file = os.path.join(
+        PATH_PREFIX + '/output', os.getenv('RESULT_TABLE_FILE', None)
+    )
 
     # Check the environment variables for the evaluation sets and the category mapping
-    wiki_evaluation_set = os.path.join(PATH_PREFIX + '/evaluation',
-        os.getenv('WIKI_EVALUATION_SET', 'Wikipedia_NER_EL.tsv'))
-    gmb_evaluation_set = os.path.join(PATH_PREFIX + '/evaluation',
-        os.getenv('GMB_EVALUATION_SET', 'ner_dataset.csv'))
-    category_map = os.path.join(PATH_PREFIX + '/evaluation',
-        os.getenv('CATEGORY_MAP', 'category_map.csv'))
+    wiki_evaluation_set = os.path.join(
+        PATH_PREFIX + '/evaluation', os.getenv('WIKI_EVALUATION_SET', 'Wikipedia_NER_EL.tsv')
+    )
+    gmb_evaluation_set = os.path.join(
+        PATH_PREFIX + '/evaluation', os.getenv('GMB_EVALUATION_SET', 'ner_dataset.csv')
+    )
+    category_map = os.path.join(
+        PATH_PREFIX + '/evaluation', os.getenv('CATEGORY_MAP', 'category_map.csv')
+    )
 
     # The settings for several evaluation sets
     multi_evaluation_sets = eval(os.getenv('MULTI_EVALUATION_SETS', 'None'))
@@ -653,7 +662,8 @@ def main():
                   contains_spaces=contains_spaces,
                   category_map=category_map)
 
-    else:     
+    else:
+
         start(PATH_PREFIX + os.path.join('/log', logfile_name),
               aliasmap_db, page_category_db, links_db,
               infobox_category_file_name, gender_data_file_name,

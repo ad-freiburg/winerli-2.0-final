@@ -1,3 +1,7 @@
+""" Johanna Götz """
+""" Code partially taken and adapted from Niklas Baumert's thesis code """
+
+
 # Taken from Niklas Baumert's evaluation code
 class Token:
     __slots__ = ('word', 'pos', 'tag', 'link')
@@ -9,8 +13,9 @@ class Token:
         self.link = link
 
     def __repr__(self):
-        return '<Token word: %s pos: %s tag: %s link: %s>' % (self.word, self.pos,
-                                                              self.tag, self.link)
+        return '<Token word: %s pos: %s tag: %s link: %s>' % (
+            self.word, self.pos, self.tag, self.link
+        )
 
 
 # Taken from Niklas Baumert's evaluation code and adjusted/extended
@@ -84,6 +89,6 @@ class EvalVals:
         self.numbers = numbers
 
     def __repr__(self):
-        return 'EvalVals(%s, %s, %s, %s, %s, %s, %s, %s)' % (self.task,
-            self.system, self.dataset, self.scoring, self.threshold,
+        return 'EvalVals(%s, %s, %s, %s, %s, %s, %s, %s)' % (
+            self.task, self.system, self.dataset, self.scoring, self.threshold,
             self.adjectives, self.numbers, self.metrics)

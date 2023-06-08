@@ -1,7 +1,7 @@
+""" Johanna Götz """
+
 import pytest
 import sys
-from pprint import pprint
-
 from parse_info import InfoboxLinkParser
 
 
@@ -136,7 +136,7 @@ def test_parse_3():
                                  'congress': 'PZ7.G1273 Co 2002',
                                  'preceded_by': '',
                                  'followed_by': ''}
-                                )]
+                                 )]
 
 
 def test_parse_4():
@@ -211,7 +211,7 @@ def test_parse_4():
                                                 '    * Yangochiroptera',
                                  'subdivision_ranks': 'Suborders',
                                  'taxon': 'Chiroptera'}
-                                )]
+                                 )]
 
 
 def test_parse_5():
@@ -285,28 +285,35 @@ def test_parse_5():
                                          '          Dark matter halo: {{convert|1.9|±|0.4|Mly|kpc|abbr=on|lk=on}}\n'
                                          '          <ref name="croswell2020" /><ref name="dearson2020" />'
                                  }
-                                )]
+                                 )]
 
 
 def test_parse_6():
     # Comments inside of infoboxes in separate lines
     s = """
-    {{Infobox book 
+    {{Infobox book
+
     | name         = Blade Runner 3: Replicant Night
     | author       = [[K. W. Jeter]]
     | language     = English
     | country      = United States
-    | genre        = [[Science fiction]]  
+    | genre        = [[Science fiction]]
+
     | publisher    = [[Bantam Spectra|Spectra]]
     | isbn         = 0-553-09983-3
     | <!-- See Wikipedia:WikiProject_Novels or Wikipedia:WikiProject_Books -->
-    | title_orig   = 
-    | translator   = 
+    | title_orig   =
+
+    | translator   =
+
     | image        = Blade Runner 3 Replicant Night KW Jeter cover.jpeg
-    | caption =Cover of the first edition 
-    | cover_artist = 
+    | caption =Cover of the first edition
+
+    | cover_artist =
+
     | series       = ''[[Blade Runner (franchise)|Blade Runner]]''
-    | subject      = 
+    | subject      =
+
     | release_date = October 1, 1996
     | media_type   = Print ([[Hardcover]], [[Paperback]])
     | pages        = 321
@@ -331,7 +338,7 @@ def test_parse_6():
                             ('Blade Runner 2: The Edge of Human', 'The Edge of Human'),
                             ('Blade Runner 4: Eye and Talon', 'Eye and Talon')]
     # Inside of infoboxes link texts will undergo some basic template stripping
-    assert result_infoboxes ==  [('book',
+    assert result_infoboxes == [('book',
                                  {'name': 'Blade Runner 3: Replicant Night',
                                   'author': 'K. W. Jeter',
                                   'language': 'English',
@@ -354,8 +361,8 @@ def test_parse_6():
                                   'oclc': '34669233',
                                   'preceded_by': 'The Edge of Human',
                                   'followed_by': 'Eye and Talon'
-                                 }
-                                )]
+                                  }
+                                 )]
 
 
 def test_parse_7():
@@ -370,9 +377,8 @@ def test_parse_7():
     # The links themselves will have a link text that got stripped of some basic templates
     assert result_links == []
     # Inside of infoboxes link texts will undergo some basic template stripping
-    assert result_infoboxes ==  [('bilateral relations',
-                                 {}
-                                )]
+    assert result_infoboxes == [('bilateral relations', {})]
+
 
 def test_parse_8():
     # Templates inside of link texts in infoboxes which will be stripped
@@ -386,9 +392,9 @@ def test_parse_8():
     # The links themselves will have a link text that got stripped of some basic templates
     assert result_links == []
     # Inside of infoboxes link texts will undergo some basic template stripping
-    assert result_infoboxes ==  [('bilateral relations',
-                                 {'map': 'Ecuador USA Locator 2.svg'}
-                                )]
+    assert result_infoboxes == [('bilateral relations',
+                                {'map': 'Ecuador USA Locator 2.svg'}
+                                 )]
 
 
 def test_parse_9():
@@ -408,12 +414,12 @@ def test_parse_9():
                             ('Embassy of the United States, Ottawa', 'United States Embassy, Ottawa'),
                             ('List of Canadian ambassadors to the United States', 'Ambassador')]
     # Inside of infoboxes link texts will undergo some basic template stripping
-    assert result_infoboxes ==  [('bilateral relations',
-                                 {'filetype': 'svg',
-                                  'mission1': 'Canadian Embassy, Washington, D.C.',
-                                  'mission2': 'United States Embassy, Ottawa',
-                                  'envoytitle1': 'Ambassador'}
-                                )]
+    assert result_infoboxes == [('bilateral relations',
+                                {'filetype': 'svg',
+                                 'mission1': 'Canadian Embassy, Washington, D.C.',
+                                 'mission2': 'United States Embassy, Ottawa',
+                                 'envoytitle1': 'Ambassador'}
+                                 )]
 
 
 def test_parse_10():
@@ -432,11 +438,10 @@ def test_parse_10():
     assert result_links == [('Test link', 'This is a test-link'),
                             ('This is a wikilink', 'Link zum Testen')]
     # Inside of infoboxes link texts will undergo some basic template stripping
-    assert result_infoboxes ==  [('testtest',
+    assert result_infoboxes == [('testtest',
                                  {'test_entry': 'Bla bla This is a test-link',
-                                  '2nd_test_entry': 'Here\'s another test link: Link zum Testen'
-                                 }
-                                )]
+                                  '2nd_test_entry': 'Here\'s another test link: Link zum Testen'}
+                                 )]
 
 
 def test_strip_templates():

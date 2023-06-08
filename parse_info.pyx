@@ -1,3 +1,5 @@
+""" Johanna Götz """
+
 # cython: language_level=3
 
 import os
@@ -7,6 +9,7 @@ import logging
 from pprint import pprint
 
 
+logging.addLevelName(100, 'PROHIBIT_LOGGING')
 LOGLEVEL = os.environ.get('LOGLEVEL', 'WARNING').upper()
 logging.basicConfig(stream=sys.stdout, level=LOGLEVEL)
 
@@ -53,7 +56,7 @@ cdef class InfoboxLinkParser:
         self.square_counter = 0
         # Don't parse infoboxes
         self.only_parse_links = False
-    
+
     # Helper function for logging output
     cpdef _shorten_string(self, str string, int n = 15):
         if len(string) > 2 * n:
@@ -75,7 +78,7 @@ cdef class InfoboxLinkParser:
             # Try parsing from here, there could be a link
             self._parse_link()
             match = self.link_regex.search(self.text, self.char_pos + 1)
-    
+
     # Parse links and infoboxes
     cpdef parse(self):
         cdef object match
@@ -101,7 +104,7 @@ cdef class InfoboxLinkParser:
 
     cpdef get_links(self):
         return self.links
-    
+
     # Extract infoboxes
     # Should nested infoboxes occur, only the outermost one will be parsed
     # The rest will be treated like a regular string
@@ -453,11 +456,3 @@ cdef class InfoboxLinkParser:
                 prev_char = char
         if test > 0: logging.debug('Result: %s' % template_stack[-1])
         return template_stack[-1]
-
-
-cpdef main():
-    pass
-
-
-if __name__ == '__main__':
-    main()
