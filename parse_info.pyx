@@ -1,6 +1,6 @@
-""" Johanna Götz """
-
 # cython: language_level=3
+
+""" Johanna Götz """
 
 import os
 import sys
