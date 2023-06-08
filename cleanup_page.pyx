@@ -592,11 +592,15 @@ cdef class PageCleaner:
                     logging.debug('Parse templates: Template of length > 1: %s', repr(template_elements))
                     if template_name == 'chem':
                         template_stack[-1].append(self.join('', template_elements[1:]))
+                    # Templates where the element at index 1 should be kept
                     # Also handle this somewhere: https://en.wikipedia.org/wiki/Template:Resize
                     elif template_name in ['small', 'smaller', 'midsize', \
                         'larger', 'big', 'large', 'huge', 'nobold', \
                         'nocaps', 'noitalic', 'nowrap']:
                         template_stack[-1].append(template_elements[1])
+                    # Templates where the element at index 2 should be kept
+                    elif template_name in ['font color']:
+                        template_stack[-1].append(template_elements[2])
                     else:
                         logging.debug('Parse templates: ' + repr(repr(template_elements).encode('unicode_escape')))
             # Normal char
