@@ -1,0 +1,14 @@
+FROM python:3
+
+RUN apt-get update
+RUN apt-get -qq -y install libgflags2.2 libgflags-dev libgflags-dev zlib1g-dev libzstd-dev
+
+VOLUME ["/input", "/output", "/test", "/mappings", "/log"]
+
+WORKDIR /app
+
+COPY . .
+
+ENTRYPOINT ["/usr/local/bin/python3"]
+
+CMD ["merger.py"]

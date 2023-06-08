@@ -1,0 +1,175 @@
+steps:
+  winerli20_recognize_test_1:
+    build:
+      context: .
+      dockerfile: "Dockerfile_recognizer_tests"
+    environment:
+      - INPUT_FILE=enwiki-test-snippets.xml.bz2
+      - INDEX_FILE=
+      - WORDS_FILE=wordsfile_test_1_%s.txt
+      - DOCS_FILE=docsfile_test_1_%s.txt
+      - ALIASMAP_DB=aliasmap.db
+      - GENDER_DATA_FILE=gender_data_new.tsv
+      - PAGE_CATEGORY_DB=page_category_db.db
+      - LINKS_DB=links_db.db
+      - INFOBOX_CATEGORY_FILE=infobox_category.tsv
+      - SCORING_FACTORS=(1.5, 1.5, 1.5, 2.5)
+      - THRESHOLD=0.2
+      - USE_ADJECTIVES=True
+      - USE_NUMBERS=False
+      - WRITE_SCORES=2
+      - NUMBER_PROCESSES=3
+      - NUMBER_PARSE_PROCESSES=1
+      - NUMBER_WRITE_PROCESSES=1
+      - PYTHONUNBUFFERED=1
+      - LOGLEVEL=CRITICAL
+    volumes:
+      - ./test:/output
+      - /nfs/students/johanna-goetz/winerli-20/input:/input
+      - /nfs/students/johanna-goetz/winerli-20/databases/evaluation:/databases
+      - ./log:/log
+    command:
+      - "python3 entity_recognition.py"
+  winerli20_recognize_test_2:
+    after:
+      - winerli20_recognize_test_1
+    build:
+      context: .
+      dockerfile: "Dockerfile_recognizer_tests"
+    environment:
+      - INPUT_FILE=enwiki-test-snippets.xml.bz2
+      - INDEX_FILE=
+      - WORDS_FILE=wordsfile_test_2_%s.txt
+      - DOCS_FILE=docsfile_test_2_%s.txt
+      - ALIASMAP_DB=aliasmap.db
+      - GENDER_DATA_FILE=gender_data_new.tsv
+      - PAGE_CATEGORY_DB=page_category_db.db
+      - LINKS_DB=links_db.db
+      - INFOBOX_CATEGORY_FILE=infobox_category.tsv
+      - SCORING_FACTORS=(1.0, 1.0, 1.0, 4.0)
+      - THRESHOLD=0.2
+      - USE_ADJECTIVES=True
+      - USE_NUMBERS=False
+      - WRITE_SCORES=2
+      - NUMBER_PROCESSES=1
+      - NUMBER_PARSE_PROCESSES=1
+      - NUMBER_WRITE_PROCESSES=1
+      - PYTHONUNBUFFERED=1
+      - LOGLEVEL=CRITICAL
+    volumes:
+      - ./test:/output
+      - /nfs/students/johanna-goetz/winerli-20/input:/input
+      - /nfs/students/johanna-goetz/winerli-20/databases/evaluation:/databases
+      - ./log:/log
+    command:
+      - "python3 entity_recognition.py"
+  winerli20_recognize_test_3:
+    after:
+      - winerli20_recognize_test_2
+    build:
+      context: .
+      dockerfile: "Dockerfile_recognizer_tests"
+    environment:
+      - INPUT_FILE=enwiki-test-snippets.xml.bz2
+      - INDEX_FILE=
+      - WORDS_FILE=wordsfile_test_3_%s.txt
+      - DOCS_FILE=docsfile_test_3_%s.txt
+      - ALIASMAP_DB=aliasmap.db
+      - GENDER_DATA_FILE=gender_data_new.tsv
+      - PAGE_CATEGORY_DB=page_category_db.db
+      - LINKS_DB=links_db.db
+      - INFOBOX_CATEGORY_FILE=infobox_category.tsv
+      - SCORING_FACTORS=(0.0, 0.0, 0.0, 0.0)
+      - THRESHOLD=0.2
+      - USE_ADJECTIVES=True
+      - USE_NUMBERS=False
+      - WRITE_SCORES=2
+      - NUMBER_PROCESSES=1
+      - NUMBER_PARSE_PROCESSES=1
+      - NUMBER_WRITE_PROCESSES=1
+      - PYTHONUNBUFFERED=1
+      - LOGLEVEL=CRITICAL
+    volumes:
+      - ./test:/output
+      - /nfs/students/johanna-goetz/winerli-20/input:/input
+      - /nfs/students/johanna-goetz/winerli-20/databases/evaluation:/databases
+      - ./log:/log
+    command:
+      - "python3 entity_recognition.py"
+  winerli20_recognize_test_4:
+    after:
+      - winerli20_recognize_test_3
+    build:
+      context: .
+      dockerfile: "Dockerfile_recognizer_tests"
+    environment:
+      - INPUT_FILE=enwiki-test-snippets.xml.bz2
+      - INDEX_FILE=
+      - WORDS_FILE=wordsfile_test_4_%s.txt
+      - DOCS_FILE=docsfile_test_4_%s.txt
+      - ALIASMAP_DB=aliasmap.db
+      - GENDER_DATA_FILE=gender_data_new.tsv
+      - PAGE_CATEGORY_DB=page_category_db.db
+      - LINKS_DB=links_db.db
+      - INFOBOX_CATEGORY_FILE=infobox_category.tsv
+      - SCORING_FACTORS=(1.5, 1.5, 1.5, 2.5)
+      - THRESHOLD=0.2
+      - USE_ADJECTIVES=False
+      - USE_NUMBERS=False
+      - WRITE_SCORES=2
+      - NUMBER_PROCESSES=1
+      - NUMBER_PARSE_PROCESSES=1
+      - NUMBER_WRITE_PROCESSES=1
+      - PYTHONUNBUFFERED=1
+      - LOGLEVEL=CRITICAL
+    volumes:
+      - ./test:/output
+      - /nfs/students/johanna-goetz/winerli-20/input:/input
+      - /nfs/students/johanna-goetz/winerli-20/databases/evaluation:/databases
+      - ./log:/log
+    command:
+      - "python3 entity_recognition.py"
+  winerli20_recognize_test_5:
+    after:
+      - winerli20_recognize_test_4
+    build:
+      context: .
+      dockerfile: "Dockerfile_recognizer_tests"
+    environment:
+      - INPUT_FILE=enwiki-test-snippets.xml.bz2
+      - INDEX_FILE=
+      - WORDS_FILE=wordsfile_test_5_%s.txt
+      - DOCS_FILE=docsfile_test_5_%s.txt
+      - ALIASMAP_DB=aliasmap.db
+      - GENDER_DATA_FILE=gender_data_new.tsv
+      - PAGE_CATEGORY_DB=page_category_db.db
+      - LINKS_DB=links_db.db
+      - INFOBOX_CATEGORY_FILE=infobox_category.tsv
+      - SCORING_FACTORS=(1.5, 1.5, 1.5, 4)
+      - THRESHOLD=0.2
+      - USE_ADJECTIVES=False
+      - USE_NUMBERS=False
+      - WRITE_SCORES=2
+      - NUMBER_PROCESSES=1
+      - NUMBER_PARSE_PROCESSES=1
+      - NUMBER_WRITE_PROCESSES=1
+      - PYTHONUNBUFFERED=1
+      - LOGLEVEL=CRITICAL
+    volumes:
+      - ./test:/output
+      - /nfs/students/johanna-goetz/winerli-20/input:/input
+      - /nfs/students/johanna-goetz/winerli-20/databases/evaluation:/databases
+      - ./log:/log
+    command:
+      - "python3 entity_recognition.py"
+  winerli20_recognize_test_rest:
+    after:
+      - winerli20_recognize_test_5
+    build:
+      context: .
+      dockerfile: "Dockerfile_recognizer_tests"
+    volumes:
+      - ./test:/input
+      - ./log:/log
+    command:
+      - "pytest -p no:cacheprovider test_wikiparsing.py test_cleanup.py test_recognizer.py -vv"

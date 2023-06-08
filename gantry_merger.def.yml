@@ -1,0 +1,23 @@
+steps:
+  winerli20:
+    build:
+      context: .
+      dockerfile: "Dockerfile_merger"
+    environment:
+      - INPUT_TYPE=wikipedia
+      - OUTPUT_TYPE=wikipedia
+      - DOCSFILE_NAME=docsfile_[0-9]+.txt
+      - WORDSFILE_NAME=wordsfile_[0-9]+.txt
+      - INPUT_FILE=
+      - INPUT_FILE_TYPE=
+      - RESULTS_PATH=/output
+      - REMOVE_MERGED_FILES=False
+      - WIKIDATA_MAP=wikidata_mapping.tsv
+      - FREEBASE_MAP=freebase_wikipedia_titles.txt
+      - PYTHONUNBUFFERED=1
+      - LOGLEVEL=CRITICAL
+    volumes:
+      - ./output:/output
+      - ./output:/input
+      - /nfs/students/niklas-baumert/input:/mappings
+      - ./log:/log
