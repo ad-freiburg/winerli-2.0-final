@@ -1,4 +1,4 @@
-.PHONY : aliasmap_test recognizer_test
+.PHONY : aliasmap_testss recognizer_test
 
 help:
 	@echo "Nothing useful here"
@@ -27,4 +27,4 @@ recognizer_tests:
 recognizer_only_tests:
 	gantry -f gantry_testcases_recognizer_onlytests.def.yml -g gantry_testcases_recognizer.env.yml
 
-tests: aliasmap_test recognizer_test
+tests: aliasmap_tests recognizer_tests
