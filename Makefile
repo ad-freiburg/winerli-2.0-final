@@ -1,4 +1,4 @@
-.PHONY : aliasmap_testss recognizer_test
+.PHONY : aliasmap_tests recognizer_test
 
 help:
 	@echo "Nothing useful here"
