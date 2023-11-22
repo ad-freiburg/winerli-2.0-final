@@ -1,5 +1,7 @@
+DOCKER:=$(shell which podman || which wharfer || which docker)
+
 docker-build:
-	wharfer build -t johanna-goetz-winerli-20 .
+	${DOCKER} build -t johanna-goetz-winerli-20 .
 
 
 DEFAULT_MAPPINGS=/nfs/students/niklas-baumert/input
@@ -7,7 +9,7 @@ DEFAULT_DATABASES=/nfs/students/johanna-goetz/winerli-20/databases/precalculated
 
 # make docker-run INPUT_ALIASMAP=/nfs/students/johanna-goetz/winerli-20/test/input OUTPUT_ALIASMAP=`pwd`/output INPUT_RECOGNITION=`pwd`/input OUTPUT_RECOGNITION=`pwd`/output LOG=`pwd`/log
 docker-run:
-	wharfer run -v $(INPUT_ALIASMAP):/input_aliasmap -v $(INPUT_RECOGNITION):/input_recognition -v $(OUTPUT_ALIASMAP):/output_aliasmap -v $(OUTPUT_RECOGNITION):/output_recognition -v $(if $(DATABASES),$(DATABASES),$(DEFAULT_DATABASES)):/databases -v $(if $(MAPPINGS),$(MAPPINGS),$(DEFAULT_MAPPINGS)):/mappings -v $(if $(LOG),$(LOG),$(PWD)/log):/log -v /nfs/students/johanna-goetz/winerli-20/test/input:/test_input -v /nfs/students/johanna-goetz/winerli-20/test/output:/test_output -v /nfs/students/johanna-goetz/winerli-20/test/databases:/test_databases -v /nfs/students/johanna-goetz/winerli-20/evaluation:/evaluation -v $(PWD)/env:/env -it --name johanna-goetz-winerli-20 johanna-goetz-winerli-20
+	${DOCKER} run -v $(INPUT_ALIASMAP):/input_aliasmap -v $(INPUT_RECOGNITION):/input_recognition -v $(OUTPUT_ALIASMAP):/output_aliasmap -v $(OUTPUT_RECOGNITION):/output_recognition -v $(if $(DATABASES),$(DATABASES),$(DEFAULT_DATABASES)):/databases -v $(if $(MAPPINGS),$(MAPPINGS),$(DEFAULT_MAPPINGS)):/mappings -v $(if $(LOG),$(LOG),$(PWD)/log):/log -v /nfs/students/johanna-goetz/winerli-20/test/input:/test_input -v /nfs/students/johanna-goetz/winerli-20/test/output:/test_output -v /nfs/students/johanna-goetz/winerli-20/test/databases:/test_databases -v /nfs/students/johanna-goetz/winerli-20/evaluation:/evaluation -v $(PWD)/env:/env -it --name johanna-goetz-winerli-20 johanna-goetz-winerli-20
 
 check-input-aliasmap-r:
 	@echo "Checking if /input_aliasmap/ is readable"
