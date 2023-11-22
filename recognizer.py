@@ -437,6 +437,7 @@ class EntityRecogniser:
                                 )
                                 logging.critical(repr(results_as_dict))
                                 logging.critical(e)
+                                continue
                             logging.warning('Recognition: Approach 2: The entity with wikilink "%s" and relevance %s has previously appeared as a link. The new score is %s.' % (
                                 previously_linked_entity.wikilink,
                                 repr(results_as_dict[previously_linked_entity.wikilink]['relevance']),
@@ -467,22 +468,31 @@ class EntityRecogniser:
                 if self.scoring_factors[2] > 0 and len(self.page_title) > 0:
                     # Get the categories for the current page if it hasn't been set yet
                     if self.current_page_categories is None:
-                        self.current_page_categories = set(json.loads(
-                            self.page_category_db.query(
-                                """
-                                SELECT `categories`
-                                FROM `categories`
-                                WHERE `wikilink` is ?
-                                """,
-                                (self.page_title,)
-                            )[0][0]
-                        ))
-                        logging.warning('Recognition: Approach 4: The current page belongs to the following categories: %s' % repr(self.current_page_categories))
+                        start_time = time.time()
+                        try:
+                            self.current_page_categories = set(json.loads(
+                                self.page_category_db.query(
+                                    """
+                                    SELECT `categories`
+                                    FROM `categories`
+                                    WHERE `wikilink` is ?
+                                    """,
+                                    (self.page_title,)
+                                )[0][0]
+                            ))
+                        except IndexError:
+                            self.current_page_categories = set()
+                            logging.critical('There is no result for page %s. Please check if your aliasmap is out of date.' % (
+                                repr(self.page_title),)
+                            )
+                        end_time = time.time()
+                        logging.warning('Recognition: Approach 4: The current page belongs to the following categories: %s; and the query took %f ms.' % (repr(self.current_page_categories), round(end_time - start_time, 6) * 1000))
                     # Get all possible entities who categories haven't already been retrieved
 
                     entities_without_categories = [possible_entity[0] for possible_entity in results if possible_entity[0] not in self.page_categories]
                     # Get the categories
                     if len(entities_without_categories) > 0:
+                        start_time = time.time()
                         page_category_db_query_result = self.page_category_db.query(
                             """
                             SELECT `wikilink`, `categories`
@@ -491,6 +501,8 @@ class EntityRecogniser:
                             """ % ','.join('?' * len(entities_without_categories)),
                             entities_without_categories
                         )
+                        end_time = time.time()
+                        logging.warning('Recognition: Approach 4: Fetching the missing category data took %f ms.' % (round(end_time - start_time, 6) * 1000,))
                         # Set the categories and calculate the overlap
                         for page_category_result in page_category_db_query_result:
                             possible_entity_wikilink = page_category_result[0]
@@ -524,6 +536,7 @@ class EntityRecogniser:
                 # Get all the pages that link to the current one
                 if self.scoring_factors[3] > 1 and self.current_page_entity is not None:
                     if self.links_db_results is None:
+                        start_time = time.time()
                         self.links_db_results = set(
                             el[0] for el in self.links_db.query(
                                 """
@@ -534,7 +547,8 @@ class EntityRecogniser:
                                 (self.page_title,)
                             )
                         )
-                        logging.warning('Recognition: Approach 5: The following pages link to the current one: %s' % repr(self.links_db_results))
+                        end_time = time.time()
+                        logging.warning('Recognition: Approach 5: The following pages link to the current one: %s; and the query took %f ms.' % (repr(self.links_db_results), round(end_time - start_time, 6) * 1000))
                     # If the entity links to the current page, give its relevance a boost of some kind
                     # Also, if the wikilink of an entity candidate is the same as the current page, boost it, too
                     for possible_entity in results:

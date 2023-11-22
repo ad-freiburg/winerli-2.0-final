@@ -9,70 +9,70 @@ BAUMERT = False
 
 @pytest.fixture
 def wordsfile_1():
-    with open('/input/wordsfile_test_1_0.txt', 'r', encoding='UTF-8') as this_file:
+    with open('/test_output/wordsfile_test_1_0.txt', 'r', encoding='UTF-8') as this_file:
         wordsfile_content = this_file.readlines()
     return wordsfile_content
 
 
 @pytest.fixture
 def docsfile_1():
-    with open('/input/docsfile_test_1_0.txt', 'r', encoding='UTF-8') as this_file:
+    with open('/test_output/docsfile_test_1_0.txt', 'r', encoding='UTF-8') as this_file:
         docsfile_content = this_file.readlines()
     return docsfile_content
 
 
 @pytest.fixture
 def wordsfile_2():
-    with open('/input/wordsfile_test_2_0.txt', 'r', encoding='UTF-8') as this_file:
+    with open('/test_output/wordsfile_test_2_0.txt', 'r', encoding='UTF-8') as this_file:
         wordsfile_content = this_file.readlines()
     return wordsfile_content
 
 
 @pytest.fixture
 def docsfile_2():
-    with open('/input/docsfile_test_2_0.txt', 'r', encoding='UTF-8') as this_file:
+    with open('/test_output/docsfile_test_2_0.txt', 'r', encoding='UTF-8') as this_file:
         docsfile_content = this_file.readlines()
     return docsfile_content
 
 
 @pytest.fixture
 def wordsfile_3():
-    with open('/input/wordsfile_test_3_0.txt', 'r', encoding='UTF-8') as this_file:
+    with open('/test_output/wordsfile_test_3_0.txt', 'r', encoding='UTF-8') as this_file:
         wordsfile_content = this_file.readlines()
     return wordsfile_content
 
 
 @pytest.fixture
 def docsfile_3():
-    with open('/input/docsfile_test_3_0.txt', 'r', encoding='UTF-8') as this_file:
+    with open('/test_output/docsfile_test_3_0.txt', 'r', encoding='UTF-8') as this_file:
         docsfile_content = this_file.readlines()
     return docsfile_content
 
 
 @pytest.fixture
 def wordsfile_4():
-    with open('/input/wordsfile_test_4_0.txt', 'r', encoding='UTF-8') as this_file:
+    with open('/test_output/wordsfile_test_4_0.txt', 'r', encoding='UTF-8') as this_file:
         wordsfile_content = this_file.readlines()
     return wordsfile_content
 
 
 @pytest.fixture
 def docsfile_4():
-    with open('/input/docsfile_test_4_0.txt', 'r', encoding='UTF-8') as this_file:
+    with open('/test_output/docsfile_test_4_0.txt', 'r', encoding='UTF-8') as this_file:
         docsfile_content = this_file.readlines()
     return docsfile_content
 
 
 @pytest.fixture
 def wordsfile_5():
-    with open('/input/wordsfile_test_5_0.txt', 'r', encoding='UTF-8') as this_file:
+    with open('/test_output/wordsfile_test_5_0.txt', 'r', encoding='UTF-8') as this_file:
         wordsfile_content = this_file.readlines()
     return wordsfile_content
 
 
 @pytest.fixture
 def docsfile_5():
-    with open('/input/docsfile_test_5_0.txt', 'r', encoding='UTF-8') as this_file:
+    with open('/test_output/docsfile_test_5_0.txt', 'r', encoding='UTF-8') as this_file:
         docsfile_content = this_file.readlines()
     return docsfile_content
 
@@ -514,16 +514,16 @@ Another form of pizza is available from take and bake pizzerias.
 
 def test_load_infobox_category_data():
     infobox_cat_db_1 = dict()
-    load_infobox_category_data(infobox_cat_db_1, '/input/infobox_category_test.tsv', cleanup=False)
+    load_infobox_category_data(infobox_cat_db_1, '/test_output/infobox_category_test.tsv', cleanup=False)
     assert infobox_cat_db_1 == {'Germany': ['country'], 'German_Empire': ['former country'], 'Palace_of_Versailles': ['historic building'], 'Heavy_metal_music': ['music genre'], 'Iron_Maiden': ['musical artist'], 'Steve_Harris_(musician)': ['musical artist'], 'Fear_of_the_Dark_(song)': ['song'], 'Afraid_to_Shoot_Strangers': ['song'], 'Power_metal': ['music genre'], 'Nightwish': ['musical artist'], "Metal:_A_Headbanger's_Journey": ['film'], 'Metal_Evolution': ['television'], 'Deathgasm': ['film'], 'Arachnophobia_(film)': ['film', 'album'], 'Coraline': ['book'], 'And_Then_There_Were_None': ['book'], 'Real_Humans': ['television']}
     infobox_cat_db_2 = dict()
-    load_infobox_category_data(infobox_cat_db_2, '/input/infobox_category_test.tsv', cleanup=True)
+    load_infobox_category_data(infobox_cat_db_2, '/test_output/infobox_category_test.tsv', cleanup=True)
     assert infobox_cat_db_2 == {'Germany': ['country'], 'German_Empire': ['former country'], 'Palace_of_Versailles': ['historic building'], 'Heavy_metal_music': ['music genre'], 'Iron_Maiden': ['musical artist'], 'Steve_Harris_(musician)': ['musical artist'], 'Fear_of_the_Dark_(song)': ['song'], 'Afraid_to_Shoot_Strangers': ['song'], 'Power_metal': ['music genre'], 'Nightwish': ['musical artist'], "Metal:_A_Headbanger's_Journey": ['film'], 'Metal_Evolution': ['television'], 'Deathgasm': ['film'], 'Arachnophobia_(film)': ['film', 'album'], 'Coraline': ['book'], 'And_Then_There_Were_None': ['book'], 'Real_Humans': ['television']}
 
 
 def test_load_gender_data():
     gender_data = dict()
-    load_gender_data(gender_data, '/input/gender_data_test.tsv')
+    load_gender_data(gender_data, '/test_input/gender_data_test.tsv')
     assert gender_data == {'Adeline_Kerrar': 'female', 'Aidan_John_Lindsay-MacDougall': 'male', 'Alberto_Villoldo': 'male', 'Alexander_Haddow': 'male', 'Alfred_Lenel': 'male', 'Al_Satterfield': 'male', 'Andoni_Arrizabalaga': 'male', 'Andrew_R_Coggan': 'male', 'Anna-Greta_Söderlund': 'female', 'Annick_Perrot-Bishop': 'female', 'Antonio_Giuseppe_Carcassona': 'male', 'Arnaldo_Rodrigues_D’Almeida': 'male', 'A_soldier': 'male', 'Badr_Shafi’i': 'male', 'Béla_Horányi': 'male', 'Bernhard_Palme': 'male', 'Blanka_Baderová': 'female', 'Brian_Maracle': 'male', 'Canan_Cetin': 'female', 'Carmelo_Caruana': 'male', 'Cees_Bremmer': 'male', 'Charles_Manfred_Thompson': 'male', 'Chen_Yin': 'male', 'Christie_Williamson': 'male', 'Clarence_George_Scott_Pigou': 'male', 'Cora_van_der_Kooij': 'female', 'Dallas_Abbott': 'female', 'Danny_Pierce': 'male', 'David_L._Callies': 'male', 'Deniz_Gönenç_Sümer': 'male', 'Dionisio_Mazzuoli': 'male', 'Doris_Meister': 'female', 'Eddy_Van_Straelen': 'male', 'Edward_Lewis_Goodwin': 'male', 'Eliav_Varda': 'male', 'Ellen_Brogren': 'female', 'Emma_Greco': 'female', 'Erik_Liljeroth': 'male', 'Eudes_de_La_Roche,_Seigneur_de_Châtillon_et_de_Nolay': 'male', 'Faisal_Qureshi': 'male', 'Fernand_Millaud': 'male', 'Francesco_Roselli': 'male', 'François-Xavier_Vogt': 'male', 'Fred_C._Brown': 'male', 'Fritz_Langheld': 'male', 'Gastón_Otreras': 'male', 'George_Newton': 'male', 'Gérard_Weber': 'male', 'Gino_Mattiello': 'male', 'Gong_Yu': 'male', 'Guillaume_Bouic': 'male', 'Hà_Anh_Tuấn': 'male', 'Hanspeter_Schild': 'male', 'Heather_D_Gibbs': 'female', 'Helen_Thompson': 'female', 'Henryk_Łubieński': 'male', 'He_Zhanao': 'male', 'Huang_Can': 'male', 'Ian_Richard_Baldock': 'male', 'Ingvild_Fossgard_Sandøy': 'female', 'István_Holló': 'male', 'Jaco_Ishulutaq': 'male', 'James_Galea': 'male', 'Jane_Friedman': 'female', 'Jaroslava_Škudrnová': 'female', 'Jean_Laquintinie': 'male', 'Jens_Toller_Rosenheim': 'male', 'Jim_Nance_McCord': 'male', 'Joe_Bailey_Cheaney': 'male', 'Johann_Gottfried_Immanuel_Berger': 'male', 'Johndale_Solem': 'male', 'John_M._Donaldson': 'male', 'Jolanta_Brodzicka': 'female', 'Josef_Emmerich_Lintz': 'male', 'Joseph_H_Gardella': 'male', 'J._Palmer': 'male', 'Julia_Tsiampali': 'female', 'Kalle_Manninen': 'male', 'Karl_Reinhold_von_Glasenapp': 'male', 'Kazimierz_Iwanicki': 'male', 'Khordong_Terchen_Nuden_Dorje': 'male', 'Konstantīns_Ovčiņņikovs': 'male', 'Laila_S._Espíndola': 'female', 'Lea_Ma': 'female', 'Lesley_Cohen': 'female', 'Lindsay_Hoyle': 'male', 'Li_Xiling': 'male', 'Louis_Matry': 'male', 'Luigi_de_Justinis': 'male', 'Maciej_Korpysz': 'male', 'Mantse_Aryeequaye': 'male', "Mareille_van_'t_Geloof": 'female', 'Maria_Ferreira_Santa_Bárbara': 'female', 'Marie_Larsson': 'female', 'Marko_Djukanović': 'male', 'Martin_Stemmler': 'male', 'Mascha_Smitt': 'female', 'Mauricio_Muñoz': 'male', 'Meredith_Bengoch_ap_Howell': 'male', 'Michael_S_Parmacek': 'male', 'Mike_Knox': 'male', 'Mitch_Sowards': 'male', 'M._P._Ahammed': 'male', 'Narve_Hoff': 'male', 'Nick_Miller': 'male', 'Ning_Rong': 'male', 'Oleg_Gulin': 'male', 'Osmundo_Evangelista_Rebouças': 'male', 'Paolo_Tiralongo': 'male', 'Paul_Dearlove': 'male', 'Peder_Arvidsson_Ribbing': 'male', 'Peter_Hebolt': 'male', 'Philipp_Christoph_Herwart': 'male', 'Pietro_Pancrazi': 'male', 'Quinton_Alston': 'male', 'Ranva_Marie_Jensen': 'female', 'Renato_Vugrinec': 'male', 'Richard_Mansfield': 'male', 'Robert_Darcy': 'male', 'Robert_Trewick_Bone': 'male', 'Ronald_Francis_Drake': 'male', 'Rudolf_Stolzmann': 'male', 'Sally_Rubin': 'female', 'Sara_Del_Rey': 'female', 'Sebastian_Wredenberg': 'male', 'Shaunzinski_Gortman': 'female', 'Sigmund_Baar': 'male', 'Sir_William_Lambton': 'male', 'Stanisław_Kadyi': 'male', 'Steven_Gellman': 'male', 'Suzanne_Duval': 'female', 'Tang_Yue': 'male', 'Theodore_Harding_Rand': 'male', 'Thomas_Lesley,_of_Felton': 'male', 'Tiril_Wishman_Eeg-Henriksen': 'female', 'Torquatus': 'male', 'Unknown_child_Buxton': 'male', 'Vasile_Lascu': 'male', 'Vilém_Neugröschl': 'male', 'Volodymyr_Eismont': 'male', 'Wang_Shi(Liupeng_Mu)': 'female', 'Wilfried_Passow': 'male', 'William_Greenleaf_Eliot': 'male', 'Willi_Wottreng': 'male', 'Xiang_Shi(Wife_of_Wu_Jun)': 'female', 'Yaroslava_Rurikovna': 'female', 'Yūko_Nihei': 'female', 'Zhang_Jian': 'male', 'Zhuang_Shi(Wife_of_Chenjiuguan)': 'female'}
 
 

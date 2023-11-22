@@ -1,5 +1,5 @@
 """ Johanna Götz """
-""" Code mostly taken from Niklas Baumert's thesis code """
+""" Code mostly taken from Niklas Baumert's thesis code and slightly adapted """
 
 import csv
 import datetime
@@ -156,17 +156,17 @@ def main():
     output_type = os.getenv('OUTPUT_TYPE', '')
 
     # The input file
-    input_file = os.getenv('INPUT_FILE', '')
+    conversion_input_file = os.getenv('CONVERSION_INPUT_FILE', '')
 
     # The wordsfile and docsfile name prefixes
     wordsfile_name = os.getenv('WORDSFILE_NAME', 'wordsfile_[0-9]+.txt')
     docsfile_name = os.getenv('DOCSFILE_NAME', 'docsfile_[0-9]+.txt')
 
     # The type of the input file (one of docsfile', 'wordsfile')
-    input_file_type = os.getenv('INPUT_FILE_TYPE', '')
+    input_file_type = os.getenv('CONVERSION_INPUT_FILE_TYPE', '')
 
     # The type of the input file (one of docsfile', 'wordsfile')
-    results_path = os.getenv('RESULTS_PATH', '')
+    results_path = os.path.join('/', os.getenv('OUTPUT_DIRECTORY', 'output_recognition'))
 
     # The type of the input file (one of docsfile', 'wordsfile')
     remove_merged_files = os.getenv('REMOVE_MERGED_FILES', 'False')
@@ -234,8 +234,9 @@ def main():
             suffix = "-wikidata"
             print('6', in_format, '->', out_format)
 
-    start(input_file, input_file_type, results_path, words_file_converter, suffix,
-          remove_merged_files, wordsfile_name=wordsfile_name, docsfile_name=docsfile_name)
+    start(conversion_input_file, input_file_type, results_path,
+          words_file_converter, suffix, remove_merged_files,
+          wordsfile_name=wordsfile_name, docsfile_name=docsfile_name)
 
 
 if __name__ == '__main__':

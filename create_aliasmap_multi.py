@@ -20,7 +20,7 @@ LOGLEVEL = os.environ.get('LOGLEVEL', 'WARNING').upper()
 logging.basicConfig(stream=sys.stdout, level=LOGLEVEL)
 
 # Use relative paths
-PATH_PREFIX = ''
+PATH_PREFIX = '/'
 if os.name == 'nt':
     PATH_PREFIX = '.'
 
@@ -634,9 +634,14 @@ def main():
     else:
         filter_red_links = False
 
+    # The input and output directories
+    input_directory = os.getenv('INPUT_DIRECTORY', 'input_aliasmap')
+    output_directory = os.getenv('OUTPUT_DIRECTORY', 'output_aliasmap')
+
     # Check the environment variable for the filename of the aliasmap database
+    print(os.path.join(PATH_PREFIX, output_directory, os.getenv('ALIASMAP_DB', 'aliasmap.db')))
     final_db = Database(
-        os.path.join(PATH_PREFIX + '/output', os.getenv('ALIASMAP_DB', 'aliasmap.db')),
+        os.path.join(PATH_PREFIX, output_directory, os.getenv('ALIASMAP_DB', 'aliasmap.db')),
         create_anew=True
     )
 
@@ -644,7 +649,7 @@ def main():
     links_db_name = os.getenv('LINKS_DB', '')
     if len(links_db_name) > 1:
         links_db = Database(
-            os.path.join(PATH_PREFIX + '/output', links_db_name),
+            os.path.join(PATH_PREFIX, output_directory, links_db_name),
             create_anew=True
         )
     else:
@@ -654,7 +659,7 @@ def main():
     page_category_db_name = os.getenv('PAGE_CATEGORY_DB', '')
     if len(page_category_db_name) > 1:
         page_category_db = Database(
-            os.path.join(PATH_PREFIX + '/output', page_category_db_name),
+            os.path.join(PATH_PREFIX, output_directory, page_category_db_name),
             create_anew=True
         )
     else:
@@ -663,14 +668,14 @@ def main():
     # Check the environment variable for the filename of the infobox categories file
     infobox_category_file_name = os.getenv('INFOBOX_CATEGORY_FILE', '')
     if len(infobox_category_file_name) > 1:
-        infobox_category_file = os.path.join(PATH_PREFIX + '/output', infobox_category_file_name)
+        infobox_category_file = os.path.join(PATH_PREFIX, output_directory, infobox_category_file_name)
     else:
         infobox_category_file = None
 
     index_file = os.getenv('INDEX_FILE', '')
 
-    start(PATH_PREFIX + os.path.join('/input', os.getenv('INPUT_FILE', '')),
-          (PATH_PREFIX + os.path.join('/input', index_file)) if len(index_file) > 0 else '',
+    start(os.path.join(PATH_PREFIX, input_directory, os.getenv('INPUT_FILE', '')),
+          (os.path.join(PATH_PREFIX, input_directory, index_file)) if len(index_file) > 0 else '',
           final_db, links_db, page_category_db, infobox_category_file,
           batch_size=15000, max_num_processes=max_num_processes,
           drop_and_vacuum=drop_and_vacuum, filter_red_links=filter_red_links)

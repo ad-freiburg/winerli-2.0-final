@@ -287,9 +287,9 @@ def generate_markdown_tables(eval_results):
                                                          x.dataset, x.scoring,
                                                          x.adjectives, x.numbers))
     # Turn the dataset into a nice string
-    datasets = {'GMB: /evaluation/ner_dataset.csv': 'GMB-Walia',
-                'Wikipedia: /evaluation/Wikipedia_NER_EL_with_links_fullarticles.tsv': 'Wikipedia w/ links',
-                'Wikipedia: /evaluation/Wikipedia_NER_EL.tsv': 'Wikipedia w/o links'}
+    datasets = {'GMB: /evaluation/input/ner_dataset.csv': 'GMB-Walia',
+                'Wikipedia: /evaluation/input/Wikipedia_NER_EL_with_links_fullarticles.tsv': 'Wikipedia w/ links',
+                'Wikipedia: /evaluation/input/Wikipedia_NER_EL.tsv': 'Wikipedia w/o links'}
     # Turn the system information into a nice string
     systems = {'winerli': 'WiNERLi 2.0', 'spacy': 'SpaCy 3.2.4'}
     # Turn (adjectives, numbers) into a string
@@ -552,44 +552,44 @@ def main():
 
     # Check the environment variable for the gender data file name
     gender_data_file_name = os.path.join(
-        PATH_PREFIX + '/databases', os.getenv('GENDER_DATA_FILE', 'gender_data.tsv')
+        PATH_PREFIX + '/evaluation/databases', os.getenv('GENDER_DATA_FILE', 'gender_data.tsv')
     )
 
     # Check the environment variable for the infobox category file name
     infobox_category_file_name = os.path.join(
-        PATH_PREFIX + '/databases', os.getenv('INFOBOX_CATEGORY_FILE', 'infobox_category.tsv')
+        PATH_PREFIX + '/evaluation/databases', os.getenv('INFOBOX_CATEGORY_FILE', 'infobox_category.tsv')
     )
 
     # Check the environment variable for the database containing the categories each article belongs to
     page_category_db = Database(
-        os.path.join(PATH_PREFIX + '/databases', os.getenv('PAGE_CATEGORY_DB', 'page_category_db.db')),
+        os.path.join(PATH_PREFIX + '/evaluation/databases', os.getenv('PAGE_CATEGORY_DB', 'page_category_db.db')),
         read_only=True
     )
 
     # Check the environment variable for the database containing data which article links to which other article
     links_db = Database(
-        os.path.join(PATH_PREFIX + '/databases', os.getenv('LINKS_DB', 'links_db.db')),
+        os.path.join(PATH_PREFIX + '/evaluation/databases', os.getenv('LINKS_DB', 'links_db.db')),
         read_only=True)
 
     # Check the environment variable for the aliasmap database
     aliasmap_db = Database(
-        os.path.join(PATH_PREFIX + '/databases', os.getenv('ALIASMAP_DB', 'aliasmap.db')),
+        os.path.join(PATH_PREFIX + '/evaluation/databases', os.getenv('ALIASMAP_DB', 'aliasmap.db')),
         read_only=True)
 
     # Check the environment variable for the result table file
     result_table_file = os.path.join(
-        PATH_PREFIX + '/output', os.getenv('RESULT_TABLE_FILE', None)
+        PATH_PREFIX + '/evaluation/output', os.getenv('RESULT_TABLE_FILE', None)
     )
 
     # Check the environment variables for the evaluation sets and the category mapping
     wiki_evaluation_set = os.path.join(
-        PATH_PREFIX + '/evaluation', os.getenv('WIKI_EVALUATION_SET', 'Wikipedia_NER_EL.tsv')
+        PATH_PREFIX + '/evaluation/input', os.getenv('WIKI_EVALUATION_SET', 'Wikipedia_NER_EL.tsv')
     )
     gmb_evaluation_set = os.path.join(
-        PATH_PREFIX + '/evaluation', os.getenv('GMB_EVALUATION_SET', 'ner_dataset.csv')
+        PATH_PREFIX + '/evaluation/input', os.getenv('GMB_EVALUATION_SET', 'ner_dataset.csv')
     )
     category_map = os.path.join(
-        PATH_PREFIX + '/evaluation', os.getenv('CATEGORY_MAP', 'category_map.csv')
+        PATH_PREFIX + '/evaluation/input', os.getenv('CATEGORY_MAP', 'category_map.csv')
     )
 
     # The settings for several evaluation sets
@@ -613,7 +613,7 @@ def main():
                     curr_contains_spaces = value
             # Add the set if all necessary settings are given
             if curr_set is not None and curr_type is not None and curr_contains_spaces is not None:
-                curr_eval_set['set'] = os.path.join(PATH_PREFIX + '/evaluation', curr_set)
+                curr_eval_set['set'] = os.path.join(PATH_PREFIX + '/evaluation/input', curr_set)
                 curr_eval_set['type'] = curr_type
                 curr_eval_set['contains_spaces'] = curr_contains_spaces
                 evaluation_sets.append(curr_eval_set)

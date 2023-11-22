@@ -23,7 +23,7 @@ LOGLEVEL = os.environ.get('LOGLEVEL', 'WARNING').upper()
 logging.basicConfig(stream=sys.stdout, level=LOGLEVEL)
 
 # Use relative paths
-PATH_PREFIX = ''
+PATH_PREFIX = '/'
 if os.name == 'nt':
     PATH_PREFIX = '.'
 
@@ -51,7 +51,6 @@ class WikipediaXMLHandler(xml.sax.handler.ContentHandler):
             logging.warning('%s: Start with new page...' % datetime.datetime.now())
             # Reset variables
             self.reset()
-            self.log(('...has started at %s.' % datetime.datetime.now()))
         # Handle redirects
         elif tag == 'redirect':
             self.is_redirect = True
@@ -82,17 +81,14 @@ class WikipediaXMLHandler(xml.sax.handler.ContentHandler):
                 except Exception as e:
                     logging.critical(e)
                     logging.critical(traceback.format_exc())
-                    self.log((e, traceback.format_exc()))
         elif tag == 'page':
             logging.warning('%s: ...page "%s" has ended.' % (datetime.datetime.now(), self.page_title))
-            self.log(('...has ended at %s.' % datetime.datetime.now()))
             if self.is_article_page:
                 pass
         elif tag == 'mediawiki':
             # Reset variables
             self.reset()
             logging.warning('Parsing finished in %s s', (time.time() - overall_start))
-            self.log(('Parsing finished in %s s.' % (time.time() - overall_start)))
 
     def apply(self, data):
         self.output_queue.put((self.process_num, data))
@@ -113,7 +109,7 @@ def parse_worker(input, output, i):
             parser.feed(content)
         except Exception as e:
             logging.critical('PROBLEM HERE:\n' + '\n'.join(
-                [repr(e), 'Process: ', repr(i), 'Offsets: ', repr(offset_range),
+                [repr(e), repr(traceback.format_exc()), 'Process: ', repr(i), 'Offsets: ', repr(offset_range),
                  content[:200].replace('\n', ' ') + ' [...] ' + content[-200:].replace('\n', ' ')]
             ))
 
@@ -320,6 +316,11 @@ def start(wiki_dump, index_file, wordsfile_name, docsfile_name, logfile_name,
 
 @timeit(1)
 def main():
+    # The input and output directories
+    input_directory = os.getenv('INPUT_DIRECTORY', 'input_recognition')
+    output_directory = os.getenv('OUTPUT_DIRECTORY', 'output_recognition')
+    database_directory = os.getenv('DATABASE_DIRECTORY', 'databases')
+
     # The name of the wiki dump file
     input_file = os.getenv('INPUT_FILE', '')
 
@@ -400,25 +401,25 @@ def main():
         write_scores = 0
 
     # Check the environment variable for the gender data file name
-    gender_data_file_name = os.path.join(PATH_PREFIX + '/databases', os.getenv('GENDER_DATA_FILE', 'gender_data.tsv'))
+    gender_data_file_name = os.path.join(PATH_PREFIX, database_directory, os.getenv('GENDER_DATA_FILE', 'gender_data.tsv'))
 
     # Check the environment variable for the infobox category file name
-    infobox_category_file_name = os.path.join(PATH_PREFIX + '/databases', os.getenv('INFOBOX_CATEGORY_FILE', 'infobox_category.tsv'))
+    infobox_category_file_name = os.path.join(PATH_PREFIX, database_directory, os.getenv('INFOBOX_CATEGORY_FILE', 'infobox_category.tsv'))
 
     # Check the environment variable for the database containing the categories each article belongs to
-    page_category_db = Database(os.path.join(PATH_PREFIX + '/databases', os.getenv('PAGE_CATEGORY_DB', 'page_category_db.db')), read_only=True)
+    page_category_db = Database(os.path.join(PATH_PREFIX, database_directory, os.getenv('PAGE_CATEGORY_DB', 'page_category_db.db')), read_only=True)
 
     # Check the environment variable for the database containing data which article links to which other article
-    links_db = Database(os.path.join(PATH_PREFIX + '/databases', os.getenv('LINKS_DB', 'links_db.db')), read_only=True)
+    links_db = Database(os.path.join(PATH_PREFIX, database_directory, os.getenv('LINKS_DB', 'links_db.db')), read_only=True)
 
     # Check the environment variable for the aliasmap database
-    aliasmap_db = Database(os.path.join(PATH_PREFIX + '/databases', os.getenv('ALIASMAP_DB', 'aliasmap.db')), read_only=True)
+    aliasmap_db = Database(os.path.join(PATH_PREFIX, database_directory, os.getenv('ALIASMAP_DB', 'aliasmap.db')), read_only=True)
 
-    start(PATH_PREFIX + os.path.join('/input', input_file),
-          (PATH_PREFIX + os.path.join('/input', index_file)) if len(index_file) > 0 else '',
-          PATH_PREFIX + os.path.join('/output', wordsfile_name),
-          PATH_PREFIX + os.path.join('/output', docsfile_name),
-          PATH_PREFIX + os.path.join('/log', logfile_name),
+    start(os.path.join(PATH_PREFIX, input_directory, input_file),
+          (os.path.join(PATH_PREFIX, input_directory, index_file)) if len(index_file) > 0 else '',
+          os.path.join(PATH_PREFIX, output_directory, wordsfile_name),
+          os.path.join(PATH_PREFIX, output_directory, docsfile_name),
+          os.path.join(PATH_PREFIX, 'log', logfile_name),
           aliasmap_db,
           page_category_db,
           links_db,

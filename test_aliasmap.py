@@ -9,22 +9,22 @@ BAUMERT = False
 
 @pytest.fixture
 def aliasmap_db():
-    return Database('/input/aliasmap_test.db', read_only=True)
+    return Database('/test_output/aliasmap_test.db', read_only=True)
 
 
 @pytest.fixture
 def links_db():
-    return Database('/input/links_db_test.db', read_only=True)
+    return Database('/test_output/links_db_test.db', read_only=True)
 
 
 @pytest.fixture
 def page_category_db():
-    return Database('/input/page_category_db_test.db', read_only=True)
+    return Database('/test_output/page_category_db_test.db', read_only=True)
 
 
 @pytest.fixture
 def infobox_category():
-    with open('/input/infobox_category_test.tsv', 'r', encoding='UTF-8') as this_file:
+    with open('/test_output/infobox_category_test.tsv', 'r', encoding='UTF-8') as this_file:
         infobox_category_content = this_file.readlines()
     return infobox_category_content
 

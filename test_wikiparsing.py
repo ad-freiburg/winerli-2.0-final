@@ -37,7 +37,7 @@ def test_wiki_format():
 
 
 def test_parse_index():
-    index_file = '/input/testindex.txt.bz2'
+    index_file = '/test_input/testindex.txt.bz2'
     parsed_index = parse_index(index_file)
     assert len(parsed_index) == 20
     assert parsed_index[0] == (599, 654485, 654485 - 599)

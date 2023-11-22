@@ -4,21 +4,51 @@ Read the blog post here to get an idea about what WiNERLi does and how it works:
 
 ## Usage
 
+### Build the container
+
+```make docker-build```
+
+### Run the container
+
+```make docker-build``` takes arguments for the different input and output directories. All paths have to be absolute.
+
+**Arguments:**
+
+- `INPUT_ALIASMAP`: The directory that contains the input for the aliasmap generation.
+
+- `OUTPUT_ALIASMAP`: The directory into which the output of the aliasmap generation will be placed.
+
+- `INPUT_RECOGNITION`: The directory that contains the input for the entity recognition/linking.
+
+- `OUTPUT_RECOGNITION`: The directory into which the output of the entity recognition/linking will be placed.
+
+**Optional:**
+
+- `LOG`: The directory into which the log files will be written. By default this is the `log` directory in your working copy.
+
+- `DATABASES`: The directory that contains the databases needed for the ER/EL procedure (aliasmap etc.). If this is argument is not given a default path containing precalculated databases will be used. If you want to first generate the aliasmap and then use it directly this path should be the same as the `OUTPUT_ALIASMAP`.
+
+- `MAPPINGS`: The directory that contains different mappings to convert the ER/EL output. If this is argument is not given a default path containing precalculated databases will be used.
+
+**Example call:**
+
+```make docker-run INPUT_ALIASMAP=`pwd`/input OUTPUT_ALIASMAP=`pwd`/output INPUT_RECOGNITION=`pwd`/input OUTPUT_RECOGNITION=`pwd`/output```
+
 ### Build the aliasmap
 
-**To build an aliasmap from a file of your choice, you need change to the following variables in `gantry_aliasmap.def.yml`:**
+**To build an aliasmap from a file of your choice, you need change to the following variables in `./env/aliasmap.env`:**
 
-- `INPUT_FILE`: A wiki dump or a valid part of a wiki dump. This file has to be located in the `input` volume.
+- `INPUT_FILE`: A wiki dump or a valid part of a wiki dump. This file has to be located in the `input_aliasmap` volume.
 
-- `INDEX_FILE`: If you use a wiki dump, you should put the matching index file here. Otherwise leave this empty. This file has to be located in the `input` volume.
+- `INDEX_FILE`: If you use a wiki dump, you should put the matching index file here. Otherwise leave this empty. This file has to be located in the `input_aliasmap` volume.
 
-- `ALIASMAP_DB`: The name for the aliasmap database output file. This file will be located in the `output` volume.
+- `ALIASMAP_DB`: The name for the aliasmap database output file. This file will be located in the `output_aliasmap` volume.
 
-- `PAGE_CATEGORY_DB`: The name for the page category database output file. This file will be located in the `output` volume.
+- `PAGE_CATEGORY_DB`: The name for the page category database output file. This file will be located in the `output_aliasmap` volume.
 
-- `LINKS_DB`: The name for the links database output file. This file will be located in the `output` volume.
+- `LINKS_DB`: The name for the links database output file. This file will be located in the `output_aliasmap` volume.
 
-- `INFOBOX_CATEGORY_FILE`: The name for the infobox category output file. This file will be located in the `output` volume.
+- `INFOBOX_CATEGORY_FILE`: The name for the infobox category output file. This file will be located in the `output_aliasmap` volume.
 
 - `FILTER_RED_LINKS`: If set to `true` ignore link data from links for which no entity (= a wiki page) exists yet.
 
@@ -40,11 +70,11 @@ Read the blog post here to get an idea about what WiNERLi does and how it works:
 
 ### Recognize and merge
 
-**To run the recognizer on a file of your choice and merge the files into one, you need change to the following variables in `gantry_recognize_and_merge.def.yml`:**
+**To run the recognizer on a file of your choice and merge the files into one, you need change to the following variables in `./env/recognize-and-merge.env`:**
 
-- `INPUT_FILE`: This can be a wiki dump or a text/xml file. It should contain only text or it can be a wiki page in which case it should start with `<mediawiki>` and follow the structure of wiki pages in wiki dumps. This file has to be located in the `input` volume.
+- `INPUT_FILE`: This can be a wiki dump or a text/xml file. It should contain only text or it can be a wiki page in which case it should start with `<mediawiki>` and follow the structure of wiki pages in wiki dumps. This file has to be located in the `input_recognition` volume.
 
-- `INDEX_FILE`: If you use a wiki dump, you should put the matching index file here. Otherwise leave this empty. This file has to be located in the `input` volume.
+- `INDEX_FILE`: If you use a wiki dump, you should put the matching index file here. Otherwise leave this empty. This file has to be located in the `input_recognition` volume.
 
 - `SCORING_FACTORS`: Set the scoring factors for all additional approaches as a tuple. If a value is smaller than 1 the approach will be disabled except for approach 4 where any value larger than 0 will enable the approach.
 
@@ -61,7 +91,7 @@ Read the blog post here to get an idea about what WiNERLi does and how it works:
 
 **Variables that may need to be changed depending on your hardware:**
 
-- `NUMBER_PROCESSES`: The total number of processes to use. The number of recognition processes will be this number minus the parsing and writing processes.
+- `NUMBER_PROCESSES`: The total number of processes to use. The number of recognition processes will be this number minus the parsing and writing processes and minus the input process.
 
 - `NUMBER_PARSE_PROCESSES`: The number of processes for parsing the input file.
 
@@ -70,9 +100,9 @@ Read the blog post here to get an idea about what WiNERLi does and how it works:
 
 **Other variables that usually do not need to be changed:**
 
-- `WORDS_FILE`: The name for the words files that will be created. This file will be located in the `output` volume.
+- `WORDS_FILE`: The name for the words files that will be created. This file will be located in the `output_recognition` volume.
 
-- `DOCS_FILE`: The name for the docs files that will be created. This file will be located in the `output` volume.
+- `DOCS_FILE`: The name for the docs files that will be created. This file will be located in the `output_recognition` volume.
 
 - `ALIASMAP_DB`: The name for the aliasmap database that should be used. This file has to be located in the `databases` volume.
 
@@ -87,34 +117,34 @@ Read the blog post here to get an idea about what WiNERLi does and how it works:
 
 **Run the code:**
 
-```make recognize_and_merge```
+```make recognize-and-merge```
 
 
 ### Tests
 
 **Run the aliasmap tests:**
 
-```make aliasmap_tests```
+```make test-aliasmap```
 
 
 **Run the recognizer tests:**
 
-```make recognizer_tests```
+```make test-recognize```
 
 **Run all tests:**
 
-```make tests```
+```make test-all```
 
 
 ### Evaluation
 
-**To run the evaluation and output the results as a markdown-formatted table, you may change the following variables in `gantry_evaluation.def.yml`:**
+**To run the evaluation and output the results as a markdown-formatted table, you may change the following variables in `./env/evaluation.env`:**
 
-- `RESULT_TABLE_FILE`: The file into which the result tables should be written in markdown formatting. This file will be located in the `output` volume.
+- `RESULT_TABLE_FILE`: The file into which the result tables should be written in markdown formatting. This file will be located in the `evaluation` volume in the `output` subdirectory.
 
 
 **Run the evaluation:**
 
 Note that this can take some time because of all the different combinations of input values that are being evaluated and because it does not use multiprocessing.
 
-```make evaluate```
+```make evaluation```
