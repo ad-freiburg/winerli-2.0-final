@@ -52,20 +52,19 @@ Read the blog post here to get an idea about what WiNERLi does and how it works:
 
 - `FILTER_RED_LINKS`: If set to `true` ignore link data from links for which no entity (= a wiki page) exists yet.
 
-
 **Variables that may need to be changed depending on your hardware:**
 
 - `NUMBER_PROCESSES`: The total number of processes to use.
-
 
 **Other variables that usually do not need to be changed:**
 
 - `DROP_AND_VACUUM`: Drop temporary tables from the aliasmap database and vacuum to reduce its size.
 
-
 **Run the code:**
 
 ```make aliasmap```
+
+You can find an example of all the generated databases in the `databases` directory.
 
 
 ### Recognize and merge
@@ -88,17 +87,7 @@ Read the blog post here to get an idea about what WiNERLi does and how it works:
 
 - `WRITE_SCORES`: Set to 0 to only write the pure relevance from the aliasmap. Set to 1 to only write the calculated final score. Set to 2 to write both (the second to last item will be the relevance and the last item will be the final score).
 
-
-**Variables that may need to be changed depending on your hardware:**
-
-- `NUMBER_PROCESSES`: The total number of processes to use. The number of recognition processes will be this number minus the parsing and writing processes and minus the input process.
-
-- `NUMBER_PARSE_PROCESSES`: The number of processes for parsing the input file.
-
-- `NUMBER_WRITE_PROCESSES`: The number of processes that will write the output to files.
-
-
-**Other variables that usually do not need to be changed:**
+**Variables for the database files:**
 
 - `WORDS_FILE`: The name for the words files that will be created. This file will be located in the `output_recognition` volume.
 
@@ -114,10 +103,35 @@ Read the blog post here to get an idea about what WiNERLi does and how it works:
 
 - `GENDER_DATA_FILE`: The name for the gender data file that should be used. This file has to be located in the `databases` volume.
 
+The gender data file can be generated using the following Qlever (https://qlever.cs.uni-freiburg.de/wikidata/) query and downloading the file as a TSV file and saving it in the `databases` directory that you'll use:
+
+```
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX schema: <http://schema.org/>
+SELECT ?name ?gender WHERE {
+ ?x wdt:P21 ?g .
+ ?x schema:name ?name .
+ ?g schema:name ?gender .
+  FILTER (lang(?name)="en") .
+  FILTER (lang(?gender)="en") .
+}
+ORDER BY ASC(?name)
+```
+
+**Variables that may need to be changed depending on your hardware:**
+
+- `NUMBER_PROCESSES`: The total number of processes to use. The number of recognition processes will be this number minus the parsing and writing processes and minus the input process.
+
+- `NUMBER_PARSE_PROCESSES`: The number of processes for parsing the input file.
+
+- `NUMBER_WRITE_PROCESSES`: The number of processes that will write the output to files.
 
 **Run the code:**
 
 ```make recognize-and-merge```
+
+You can find an example of all the generated output files in the `output` directory.
 
 
 ### Tests
@@ -148,3 +162,5 @@ Read the blog post here to get an idea about what WiNERLi does and how it works:
 Note that this can take some time because of all the different combinations of input values that are being evaluated and because it does not use multiprocessing.
 
 ```make evaluation```
+
+**Attention: This only works within the university network because large databases are required that are stored on a uni server.
