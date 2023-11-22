@@ -7,7 +7,7 @@ DEFAULT_DATABASES=/nfs/students/johanna-goetz/winerli-20/databases/precalculated
 
 # make docker-run INPUT_ALIASMAP=/nfs/students/johanna-goetz/winerli-20/test/input OUTPUT_ALIASMAP=`pwd`/output INPUT_RECOGNITION=`pwd`/input OUTPUT_RECOGNITION=`pwd`/output LOG=`pwd`/log
 docker-run:
-	wharfer run -v $(INPUT_ALIASMAP):/input_aliasmap -v $(INPUT_RECOGNITION):/input_recognition -v $(OUTPUT_ALIASMAP):/output_aliasmap -v $(OUTPUT_RECOGNITION):/output_recognition -v $(if $(DATABASES),$(DATABASES),$(DEFAULT_DATABASES)):/databases -v $(if $(MAPPINGS),$(MAPPINGS),$(DEFAULT_MAPPINGS)):/mappings -v $(LOG):/log -v /nfs/students/johanna-goetz/winerli-20/test/input:/test_input -v /nfs/students/johanna-goetz/winerli-20/test/output:/test_output -v /nfs/students/johanna-goetz/winerli-20/test/databases:/test_databases -v /nfs/students/johanna-goetz/winerli-20/evaluation:/evaluation -v $(PWD)/env:/env -it --name johanna-goetz-winerli-20 johanna-goetz-winerli-20
+	wharfer run -v $(INPUT_ALIASMAP):/input_aliasmap -v $(INPUT_RECOGNITION):/input_recognition -v $(OUTPUT_ALIASMAP):/output_aliasmap -v $(OUTPUT_RECOGNITION):/output_recognition -v $(if $(DATABASES),$(DATABASES),$(DEFAULT_DATABASES)):/databases -v $(if $(MAPPINGS),$(MAPPINGS),$(DEFAULT_MAPPINGS)):/mappings -v $(if $(LOG),$(LOG),$(PWD)/log):/log -v /nfs/students/johanna-goetz/winerli-20/test/input:/test_input -v /nfs/students/johanna-goetz/winerli-20/test/output:/test_output -v /nfs/students/johanna-goetz/winerli-20/test/databases:/test_databases -v /nfs/students/johanna-goetz/winerli-20/evaluation:/evaluation -v $(PWD)/env:/env -it --name johanna-goetz-winerli-20 johanna-goetz-winerli-20
 
 check-input-aliasmap-r:
 	@echo "Checking if /input_aliasmap/ is readable"
@@ -57,19 +57,19 @@ check-test-output-rw:
 all: aliasmap recognize-and-merge
 
 aliasmap: check-log-rw check-output-aliasmap-rw check-input-aliasmap-r
-	bash -c "source ./env/aliasmap.env && python3 create_aliasmap_multi.py"
+	bash -c "source ./env/aliasmap.env && python3 create_aliasmap_multi.py > /log/winerli20-aliasmap-stdout.log 2> /log/winerli20-aliasmap-stderr.log"
 
 recognize: check-log-rw check-output-recognition-rw check-input-recognition-r check-databases-r
-	bash -c "source ./env/recognize-and-merge.env && python3 entity_recognition.py"
+	bash -c "source ./env/recognize-and-merge.env && python3 entity_recognition.py > /log/winerli20-recognize-stdout.log 2> /log/winerli20-recognize-stderr.log"
 
 merge: check-log-rw check-output-recognition-rw check-mappings-r
-	bash -c "source ./env/merger.env && python3 merger.py"
+	bash -c "source ./env/merger.env && python3 merger.py > /log/winerli20-merge-stdout.log 2> /log/winerli20-merge-stderr.log"
 
 recognize-and-merge: check-log-rw check-output-recognition-rw check-input-recognition-r check-databases-r check-mappings-r
-	bash -c "source ./env/recognize-and-merge.env && python3 entity_recognition.py && python3 merger.py"
+	bash -c "source ./env/recognize-and-merge.env && python3 entity_recognition.py > /log/winerli20-recognize-stdout.log 2> /log/winerli20-recognize-stderr.log && python3 merger.py > /log/winerli20-merge-stdout.log 2> /log/winerli20-merge-stderr.log"
 
 evaluation: check-log-rw check-evaluation-rw
-	bash -c "source ./env/evaluation.env && python3 evaluation.py"
+	bash -c "source ./env/evaluation.env && python3 evaluation.py > /log/winerli20-evaluation-stdout.log 2> /log/winerli20-evaluation-stderr.log"
 
 
 test-all: test-aliasmap test-recognize
@@ -80,7 +80,7 @@ test-aliasmap-1: check-log-rw check-test-input-r check-test-output-rw
 	bash -c "source ./env/test-aliasmap-1.env && python3 create_aliasmap_multi.py"
 
 test-aliasmap-2: check-log-rw check-test-output-rw
-	pytest -p no:cacheprovider test_wikiparsing.py test_parse_info.py test_aliasmap.py -vv
+	pytest -p no:cacheprovider test_wikiparsing.py test_parse_info.py test_aliasmap.py -vv > /log/winerli20-test-aliasmap-stdout.log 2> /log/winerli20-test-aliasmap-stderr.log
 
 test-recognize: test-recognize-1 test-recognize-2 test-recognize-3 test-recognize-4 test-recognize-5 test-recognize-6
 
@@ -100,4 +100,4 @@ test-recognize-5: check-log-rw check-test-input-r check-test-output-rw check-tes
 	bash -c "source ./env/test-recognize-5.env && python3 entity_recognition.py"
 
 test-recognize-6: check-log-rw check-test-input-r
-	pytest -p no:cacheprovider test_wikiparsing.py test_cleanup.py test_recognizer.py -vv
+	pytest -p no:cacheprovider test_wikiparsing.py test_cleanup.py test_recognizer.py -vv > /log/winerli20-test-recognize-stdout.log 2> /log/winerli20-test-recognize-stderr.log

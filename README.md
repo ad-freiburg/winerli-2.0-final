@@ -76,7 +76,7 @@ Read the blog post here to get an idea about what WiNERLi does and how it works:
 
 - `INDEX_FILE`: If you use a wiki dump, you should put the matching index file here. Otherwise leave this empty. This file has to be located in the `input_recognition` volume.
 
-- `SCORING_FACTORS`: Set the scoring factors for all additional approaches as a tuple. If a value is smaller than 1 the approach will be disabled except for approach 4 where any value larger than 0 will enable the approach.
+- `SCORING_FACTORS`: Set the scoring factors for all additional approaches as a tuple. If a value is smaller than 1 the approach will be disabled except for approach 4 (3rd value) where any value larger than 0 will enable the approach and approach 5 (4th value) where any value larger than 1 will enable the approach. Note that the values have to be given as a tuple and the tuple has to be enclosed in '...'.
 
 - `THRESHOLD`: The threshold for the scores. Any entity that has a score smaller than this will not be recognised. This should be a number larger than 0.
 
