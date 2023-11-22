@@ -10,7 +10,7 @@ Read the blog post here to get an idea about what WiNERLi does and how it works:
 
 ### Run the container
 
-```make docker-build``` takes arguments for the different input and output directories. All paths have to be absolute.
+```make docker-run``` takes arguments for the different input and output directories. All paths have to be absolute.
 
 **Arguments:**
 
