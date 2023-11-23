@@ -32,7 +32,9 @@ Read the blog post here to get an idea about what WiNERLi does and how it works:
 
 **Example call:**
 
-```make docker-run INPUT_ALIASMAP=`pwd`/input OUTPUT_ALIASMAP=`pwd`/output INPUT_RECOGNITION=`pwd`/input OUTPUT_RECOGNITION=`pwd`/output```
+```make docker-run INPUT_ALIASMAP=`pwd`/input OUTPUT_ALIASMAP=`pwd`/databases INPUT_RECOGNITION=`pwd`/input OUTPUT_RECOGNITION=`pwd`/output DATABASES=`pwd`/databases```
+
+The local `input` directory already contains two files with a few (shortened) pages from Wikipedia which can be used for both an example aliasmap generation as well as ER/RL, and one with just a few paragraphs of non-Wikipedia text that can only be used for EL/ER.
 
 ### Build the aliasmap
 
