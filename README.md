@@ -36,6 +36,8 @@ Read the blog post here to get an idea about what WiNERLi does and how it works:
 
 The local `input` directory already contains two files with a few (shortened) pages from Wikipedia which can be used for both an example aliasmap generation as well as ER/RL, and one with just a few paragraphs of non-Wikipedia text that can only be used for EL/ER.
 
+If you are working on a machine from the AD chair at the Technical Faculty at the University of Freiburg you should leave away the `EVALUATION` and the `MAPPINGS` arguments to use the evaluation files that are located in `/nfs/students`.
+
 ### Build the aliasmap
 
 **To build an aliasmap from a file of your choice, you need change to the following variables in `./env/aliasmap.env`:**
@@ -165,4 +167,4 @@ Note that this can take some time because of all the different combinations of i
 
 ```make evaluation```
 
-**Attention: This only works within the university network because large databases are required that are stored on a uni server. Only the Wikipedia-based evaluation files are included here.**
+**Attention: This only works on a machine from the AD chair at the Technical Faculty at the University of Freiburg because large databases are required that are stored on a uni server. Only the Wikipedia-based evaluation files are included here.**
