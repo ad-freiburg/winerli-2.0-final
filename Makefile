@@ -83,7 +83,7 @@ test-aliasmap-1: check-log-rw check-test-input-r check-test-output-rw
 	bash -c "source ./env/test-aliasmap-1.env && python3 create_aliasmap_multi.py"
 
 test-aliasmap-2: check-log-rw check-test-output-rw
-	pytest -p no:cacheprovider test_wikiparsing.py test_parse_info.py test_aliasmap.py -vv > /log/winerli20-test-aliasmap-stdout.log 2> /log/winerli20-test-aliasmap-stderr.log
+	pytest -p no:cacheprovider test_wikiparsing.py test_parse_info.py test_aliasmap.py -vv
 
 test-recognize: test-recognize-1 test-recognize-2 test-recognize-3 test-recognize-4 test-recognize-5 test-recognize-6
 
@@ -103,4 +103,4 @@ test-recognize-5: check-log-rw check-test-input-r check-test-output-rw check-tes
 	bash -c "source ./env/test-recognize-5.env && python3 entity_recognition.py > /log/winerli20-test-recognize-5-stdout.log 2> /log/winerli20-test-recognize-5-stderr.log"
 
 test-recognize-6: check-log-rw check-test-input-r
-	pytest -p no:cacheprovider test_wikiparsing.py test_cleanup.py test_recognizer.py -vv > /log/winerli20-test-recognize-stdout.log 2> /log/winerli20-test-recognize-stderr.log
+	pytest -p no:cacheprovider test_wikiparsing.py test_cleanup.py test_recognizer.py -vv
