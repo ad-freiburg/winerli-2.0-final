@@ -10,7 +10,7 @@ DEFAULT_EVALUATION=/nfs/students/johanna-goetz/winerli-20/evaluation
 
 # make docker-run INPUT_ALIASMAP=`pwd`/input OUTPUT_ALIASMAP=`pwd`/databases INPUT_RECOGNITION=`pwd`/input OUTPUT_RECOGNITION=`pwd`/output DATABASES=`pwd`/databases MAPPINGS=`pwd`/mappings EVALUATION=`pwd`/evaluation
 docker-run:
-	${DOCKER} run -v $(INPUT_ALIASMAP):/input_aliasmap -v $(INPUT_RECOGNITION):/input_recognition -v $(OUTPUT_ALIASMAP):/output_aliasmap -v $(OUTPUT_RECOGNITION):/output_recognition -v $(if $(DATABASES),$(DATABASES),$(DEFAULT_DATABASES)):/databases -v $(if $(MAPPINGS),$(MAPPINGS),$(DEFAULT_MAPPINGS)):/mappings -v $(if $(LOG),$(LOG),$(PWD)/log):/log -v $(PWD)/test/input:/test_input -v $(PWD)/test/output:/test_output -v $(PWD)/test/databases:/test_databases -v $(if $(EVALUATION),$(EVALUATION),$(DEFAULT_EVALUATION)):/evaluation -v $(PWD)/env:/env -it --name johanna-goetz-winerli-20 johanna-goetz-winerli-20
+	${DOCKER} run --rm -v $(INPUT_ALIASMAP):/input_aliasmap -v $(INPUT_RECOGNITION):/input_recognition -v $(OUTPUT_ALIASMAP):/output_aliasmap -v $(OUTPUT_RECOGNITION):/output_recognition -v $(if $(DATABASES),$(DATABASES),$(DEFAULT_DATABASES)):/databases -v $(if $(MAPPINGS),$(MAPPINGS),$(DEFAULT_MAPPINGS)):/mappings -v $(if $(LOG),$(LOG),$(PWD)/log):/log -v $(PWD)/test/input:/test_input -v $(PWD)/test/output:/test_output -v $(PWD)/test/databases:/test_databases -v $(if $(EVALUATION),$(EVALUATION),$(DEFAULT_EVALUATION)):/evaluation -v $(PWD)/env:/env -it --name johanna-goetz-winerli-20 johanna-goetz-winerli-20
 
 check-input-aliasmap-r:
 	@echo "Checking if /input_aliasmap/ is readable"
