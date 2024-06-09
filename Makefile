@@ -4,7 +4,7 @@ help:
 	@echo "Available targets:"
 	@echo "aliasmap	--	Build the aliasmap from a wiki dump. Creates 4 files: aliasmap.db, links_db.db, page_categories_db.db, infobox_category.tsv. Run the 'help-aliasmap' for further information."
 	@echo "recognize-and-merge	--	Perform the recognition process on a wiki dump or a text file. Creates 2 files: a docsfile and a wordsfile. Run the 'help-recognize-and-merge' for further information."
-	@echo "evaluation	--	Run the evaluaion. Creates 1 file containing the results as a markdown table. Run the 'help-evaluation' for further information."
+	@echo "evaluation	--	Run the evaluation. Creates 1 file containing the results as a markdown table. Run the 'help-evaluation' for further information."
 	@echo "test-aliasmap	--	Run the aliasmap test cases"
 	@echo "test-recognize	--	Run the recognizer test cases"
 	@echo "test-all	--	Run all test cases"

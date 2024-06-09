@@ -21,5 +21,9 @@ ADD Makefile /app
 
 ENTRYPOINT ["/bin/bash"]
 
+echo "Welcome to WiNERli 2.0!"
+echo "WiNERli 2.0 is an improved and extended version of WiNERli, a system that can create an aliasmap from a Wikipedia dump and perform entity recognition on a Wikipedia dump after an aliasmap has been created."
+echo "Please run 'make help' for further information about the available targets that you can use to run WiNERli 2.0. If you need further and more detailed information please have a look at README.md."
+
 # make docker build
 # make docker-run INPUT_ALIASMAP=`pwd`/input OUTPUT_ALIASMAP=`pwd`/databases INPUT_RECOGNITION=`pwd`/input OUTPUT_RECOGNITION=`pwd`/output DATABASES=`pwd`/databases MAPPINGS=`pwd`/mappings EVALUATION=`pwd`/evaluation```
