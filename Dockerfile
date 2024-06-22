@@ -5,7 +5,7 @@ RUN apt-get -qq -y install gcc libgflags2.2 libgflags-dev libgflags-dev zlib1g-d
 RUN pip3 install --upgrade pip
 RUN pip3 uninstall numpy
 RUN pip3 uninstall spacy
-RUN pip3 install numpy
+RUN pip3 install 'numpy==1.26.4'
 RUN pip3 install regex 'spacy~=3.2.4' pytest cython
 RUN python3 -m spacy download en && python3 -m spacy download en_core_web_sm
 
